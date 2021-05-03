@@ -225,6 +225,12 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/PTMP/systems/_unrutned_beta.pas"
           );
         }
+        if (modMounted("Community_Map_Pack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/CMP/systems/gemini_belt.pas",
+            "coui://ui/mods/CMP/systems/canopus_system.pas"
+          );
+        }
         if (modMounted("nl.pa.andreasg.ffa_map_pack")) {
           multiplanetarySystems.push(
             "coui://ui/mods/ffa_map_pack/systems/best_off_ladder.pas"
