@@ -49,6 +49,18 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/tetcmp1/systems/saturn.pas"
           );
         }
+        if (modPresent("com.pa.sonicblue22.maps")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/SonicBlue22/systems/destroyer.pas",
+            "coui://ui/mods/SonicBlue22/systems/mega_asteroids.pas",
+            "coui://ui/mods/SonicBlue22/systems/rice.pas",
+            "coui://ui/mods/SonicBlue22/systems/rings.pas",
+            "coui://ui/mods/SonicBlue22/systems/ruins.pas",
+            "coui://ui/mods/SonicBlue22/systems/sula.pas",
+            "coui://ui/mods/SonicBlue22/systems/tri-way.pas",
+            "coui://ui/mods/SonicBlue22/systems/wreck.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });

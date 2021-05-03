@@ -13,3 +13,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - Pwn4two
 - Academia
 - TheEffectTheCause
+- SonicBlue22
