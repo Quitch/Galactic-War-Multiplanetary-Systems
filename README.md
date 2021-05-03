@@ -23,3 +23,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - [AndreasG](https://forums.planetaryannihilation.com/threads/andreasg-1v1-map-pack-on-pamm-now.70631/)
 - [Violet Ania](https://forums.planetaryannihilation.com/threads/the-lana-series.70524/)
 - [Team Burning](https://forums.planetaryannihilation.com/threads/team-burning-systems.67823/)
+- [eXodus eSports](https://forums.planetaryannihilation.com/threads/exodus-esports-map-pack.71887/)
