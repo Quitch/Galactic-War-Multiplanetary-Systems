@@ -22,3 +22,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - [Alpha2546](https://forums.planetaryannihilation.com/threads/alpha2546-maps-kure-atoll-02-11-2016-download-on-pamm.70258/)
 - [AndreasG](https://forums.planetaryannihilation.com/threads/andreasg-1v1-map-pack-on-pamm-now.70631/)
 - [Violet Ania](https://forums.planetaryannihilation.com/threads/the-lana-series.70524/)
+- [Team Burning](https://forums.planetaryannihilation.com/threads/team-burning-systems.67823/)

@@ -135,6 +135,20 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/violetania/systems/lana's_heart.pas"
           );
         }
+        if (modMounted("com.pa.elite.team_burning_systems")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]canopus_system.pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]gemini_belt.pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]mek_whipping grounds (5).pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]mek_whipping grounds (6).pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]mek_whipping grounds (7).pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]mek_whipping grounds (8).pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]mek_whipping grounds (9).pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]mek_whipping grounds (10).pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]omega_belt.pas",
+            "coui://ui/mods/Team_Burning_Systems/systems/[tbs]worlds_collide.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
