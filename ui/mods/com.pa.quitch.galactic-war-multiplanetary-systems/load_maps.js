@@ -197,6 +197,34 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/com.pa.tokenelt.maps/systems/gamma_system.pas"
           );
         }
+        if (modMounted("com.pa.tesseracta.client.maps")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/PTMP/systems/alpha_centauri a.pas",
+            "coui://ui/mods/PTMP/systems/alpha_draconois.pas",
+            "coui://ui/mods/PTMP/systems/beta_draconois.pas",
+            "coui://ui/mods/PTMP/systems/collide.pas",
+            "coui://ui/mods/PTMP/systems/delta_hydri.pas",
+            "coui://ui/mods/PTMP/systems/gelan,_ignus, aqua.pas",
+            "coui://ui/mods/PTMP/systems/heck_3.pas",
+            "coui://ui/mods/PTMP/systems/orbit.pas",
+            "coui://ui/mods/PTMP/systems/orbit_2.pas",
+            "coui://ui/mods/PTMP/systems/pax_alpha 2016.pas",
+            "coui://ui/mods/PTMP/systems/pax_alpha 2017.pas",
+            "coui://ui/mods/PTMP/systems/pax_beta 2016.pas",
+            "coui://ui/mods/PTMP/systems/pax_fish 2015.pas",
+            "coui://ui/mods/PTMP/systems/perpendicular_gas.pas",
+            "coui://ui/mods/PTMP/systems/prehistoric_sol.pas",
+            "coui://ui/mods/PTMP/systems/sol_2.pas",
+            "coui://ui/mods/PTMP/systems/theamore.pas",
+            "coui://ui/mods/PTMP/systems/unique_planets x.pas",
+            "coui://ui/mods/PTMP/systems/_gas_battles.pas",
+            "coui://ui/mods/PTMP/systems/_pax_earth 2016.pas",
+            "coui://ui/mods/PTMP/systems/_pax_sire 2016.pas",
+            "coui://ui/mods/PTMP/systems/_prodecor.pas",
+            "coui://ui/mods/PTMP/systems/_theamore_ii.pas",
+            "coui://ui/mods/PTMP/systems/_unrutned_beta.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
