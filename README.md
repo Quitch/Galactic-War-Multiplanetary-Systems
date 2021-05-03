@@ -8,11 +8,11 @@ Any maps reliant on server mods have not been included as these will not work in
 
 ## Supported Map Packs
 
-- Grand Homie
-- WPMarshall
-- Pwn4two
-- Academia
-- TheEffectTheCause
-- SonicBlue22
-- Clan ICARUS
+- [Grand Homie](https://forums.planetaryannihilation.com/threads/grand-homies-map-pack.72635/)
+- [WPMarshall](https://forums.planetaryannihilation.com/threads/wpmarshalls-map-pack.71597/)
+- [Pwn4two](https://forums.planetaryannihilation.com/threads/pwn4twos-map-pack.70689/)
+- [Academia](https://forums.planetaryannihilation.com/threads/academia-map-pack.73511/)
+- [TheEffectTheCause](https://forums.planetaryannihilation.com/threads/theeffectthecause-map-pack.73439/)
+- [SonicBlue22](https://forums.planetaryannihilation.com/threads/sonicblue22s-map-pack.72538/)
+- [Clan ICARUS](https://forums.planetaryannihilation.com/threads/clan-icarus-map-pack.73237/)
 - [King](https://forums.planetaryannihilation.com/threads/kings-map-pack.73459/)
