@@ -12,6 +12,12 @@ if (!gwMultiplanetarySystemsLoaded) {
 
         var multiplanetarySystems = [];
 
+        if (modPresent("com.pa.grandhomie.maps")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/grandhomie/systems/32_ffa.pas"
+          );
+        }
+
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
     } catch (e) {
