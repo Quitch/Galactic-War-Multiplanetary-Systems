@@ -7,3 +7,4 @@ Maps are not included with this mod, instead it will load in maps from map packs
 ## Supported Map Packs
 
 - Grand Homie's Map Pack
+- WPMarshall's Map Pack
