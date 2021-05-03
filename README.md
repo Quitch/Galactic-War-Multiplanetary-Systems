@@ -8,5 +8,6 @@ Any maps reliant on server mods have not been included as these will not work in
 
 ## Supported Map Packs
 
-- Grand Homie's Map Pack
-- WPMarshall's Map Pack
+- Grand Homie
+- WPMarshall
+- Pwn4two

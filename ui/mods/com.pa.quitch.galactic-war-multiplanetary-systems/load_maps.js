@@ -26,6 +26,17 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/wpmarshall/systems/(5v5)_world_of tomorrow 2.1.0.pas"
           );
         }
+        if (modPresent("nl.pa.Pwn4two.pwn4two_map_pack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/pwn4two/systems/icecream_donut utensil.pas",
+            "coui://ui/mods/pwn4two/systems/war_of the worlds.pas",
+            "coui://ui/mods/pwn4two/systems/attack_on titan.pas",
+            "coui://ui/mods/pwn4two/systems/duel_planets.pas",
+            "coui://ui/mods/pwn4two/systems/the_big squeeze.pas",
+            "coui://ui/mods/pwn4two/systems/32_friends.pas",
+            "coui://ui/mods/pwn4two/systems/dualdecahedron.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
