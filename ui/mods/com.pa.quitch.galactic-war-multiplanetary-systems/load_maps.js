@@ -18,6 +18,7 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("nl.pa.wpmarshall.wpmarshall_map_pack")) {
+          var wpmarshallMounted = true;
           multiplanetarySystems.push(
             "coui://ui/mods/wpmarshall/systems/(1v1)_ubersdkhto.pas",
             "coui://ui/mods/wpmarshall/systems/(5v5)_marshall's_lament (classic).pas",
@@ -27,6 +28,7 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("nl.pa.Pwn4two.pwn4two_map_pack")) {
+          var pwn4twoMounted = true;
           multiplanetarySystems.push(
             "coui://ui/mods/pwn4two/systems/icecream_donut utensil.pas",
             "coui://ui/mods/pwn4two/systems/war_of the worlds.pas",
@@ -114,6 +116,7 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("nl.pa.Alpha.alpha2546_map_pack")) {
+          var alpha2546Mounted = true;
           multiplanetarySystems.push(
             "coui://ui/mods/alpha2546/systems/carnage_system.pas",
             "coui://ui/mods/alpha2546/systems/rain_v30.pas",
@@ -126,6 +129,7 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("nl.pa.andreasg.andreasg_map_pack")) {
+          var andreasgMounted = true;
           multiplanetarySystems.push(
             "coui://ui/mods/andreasg/systems/mots_recipe_for_disaster.pas"
           );
@@ -136,6 +140,7 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("com.pa.elite.team_burning_systems")) {
+          var teamBurningMounted;
           multiplanetarySystems.push(
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]canopus_system.pas",
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]gemini_belt.pas",
@@ -151,29 +156,29 @@ if (!gwMultiplanetarySystemsLoaded) {
         }
         if (modMounted("com.exodusesports.tournamentmappack-dev")) {
           var filteredDuplicateSystems = [];
-          if (!modMounted("nl.pa.wpmarshall.wpmarshall_map_pack")) {
+          if (!wpmarshallMounted) {
             filteredDuplicateSystems.push(
               "coui://ui/mods/maps/systems/marshalls_lament_titans.pas"
             );
           }
-          if (!modMounted("nl.pa.andreasg.andreasg_map_pack")) {
+          if (!andreasgMounted) {
             filteredDuplicateSystems.push(
               "coui://ui/mods/maps/systems/mots_recipe_for_disaster_original.pas"
             );
           }
-          if (!modMounted("com.pa.elite.team_burning_systems")) {
+          if (!teamBurningMounted) {
             filteredDuplicateSystems.push(
               "coui://ui/mods/maps/systems/omega_belt.pas"
             );
           }
-          if (!modMounted("nl.pa.Alpha.alpha2546_map_pack")) {
+          if (alpha2546Mounted) {
             filteredDuplicateSystems.push(
               "coui://ui/mods/maps/systems/icy_v17.pas",
               "coui://ui/mods/maps/systems/elrose_v18.pas",
               "coui://ui/mods/maps/systems/t-_rain_system.pas"
             );
           }
-          if (!modMounted("nl.pa.Pwn4two.pwn4two_map_pack")) {
+          if (!pwn4twoMounted) {
             filteredDuplicateSystems.push(
               "coui://ui/mods/maps/systems/war_of the worlds.pas"
             );
