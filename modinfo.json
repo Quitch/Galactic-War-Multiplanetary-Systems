@@ -9,7 +9,7 @@
   "date": "2021-05-03",
   "signature": " ",
   "forum": "https://forums.planetaryannihilation.com/threads/exodus-esports-map-pack.71887/",
-  "icon": "https://raw.githubusercontent.com/Quitch/Galactic-War-Multiplanetary-Systems/develop/images/icon.gif",
+  "icon": "https://raw.githubusercontent.com/Quitch/Galactic-War-Multiplanetary-Systems/develop/images/icon.png",
   "category": ["maps", "gw", "classic", "titans"],
   "load_planet": [
     "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/load_maps.js"
