@@ -231,6 +231,14 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/CMP/systems/canopus_system.pas"
           );
         }
+        if (modMounted("DrBoggles")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/DrBoggles_Map_Pack/systems/Brahma.pas",
+            "coui://ui/mods/DrBoggles_Map_Pack/systems/Kronos.pas",
+            "coui://ui/mods/DrBoggles_Map_Pack/systems/Vixitores Duel.pas",
+            "coui://ui/mods/DrBoggles_Map_Pack/systems/Words-Of-Conviction.pas"
+          );
+        }
         if (modMounted("nl.pa.andreasg.ffa_map_pack")) {
           multiplanetarySystems.push(
             "coui://ui/mods/ffa_map_pack/systems/best_off_ladder.pas"

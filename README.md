@@ -27,4 +27,5 @@ Any maps reliant on server mods have not been included as these will not work in
 - [TokenELT](https://forums.planetaryannihilation.com/threads/rel-client-system-sharing-2.69117/)
 - [Poseidons Trident](https://forums.planetaryannihilation.com/threads/poseidons-trident-map-pack.69030/)
 - [Community](https://forums.planetaryannihilation.com/threads/community-map-pack.67523/)
+- Dr Boggles
 - FFA
