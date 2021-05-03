@@ -155,7 +155,12 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("com.exodusesports.tournamentmappack-dev")) {
-          var filteredDuplicateSystems = [];
+          var filteredDuplicateSystems = [
+            "coui://ui/mods/maps/systems/bang_battle.pas",
+            "coui://ui/mods/maps/systems/burnt_playground.pas",
+            "coui://ui/mods/maps/systems/mots_recipe_for_disaster.pas",
+            "coui://ui/mods/maps/systems/twbaby.pas",
+          ];
           if (!wpmarshallMounted) {
             filteredDuplicateSystems.push(
               "coui://ui/mods/maps/systems/marshalls_lament_titans.pas"
@@ -183,12 +188,6 @@ if (!gwMultiplanetarySystemsLoaded) {
               "coui://ui/mods/maps/systems/war_of the worlds.pas"
             );
           }
-          filteredDuplicateSystems.push(
-            "coui://ui/mods/maps/systems/bang_battle.pas",
-            "coui://ui/mods/maps/systems/burnt_playground.pas",
-            "coui://ui/mods/maps/systems/mots_recipe_for_disaster.pas",
-            "coui://ui/mods/maps/systems/twbaby.pas"
-          );
           multiplanetarySystems = multiplanetarySystems.concat(
             filteredDuplicateSystems
           );
