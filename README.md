@@ -11,3 +11,5 @@ Any maps reliant on server mods have not been included as these will not work in
 - Grand Homie
 - WPMarshall
 - Pwn4two
+- Academia
+- TheEffectTheCause

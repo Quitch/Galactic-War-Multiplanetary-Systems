@@ -43,6 +43,12 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/academia/systems/aca's_universe.pas"
           );
         }
+        if (modPresent("uk.pa.tetcmappack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/tetcmp1/systems/tg1v1.pas",
+            "coui://ui/mods/tetcmp1/systems/saturn.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
