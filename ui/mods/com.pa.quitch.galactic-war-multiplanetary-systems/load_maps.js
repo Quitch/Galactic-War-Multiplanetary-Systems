@@ -125,6 +125,11 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/alpha2546/systems/system_f301.pas"
           );
         }
+        if (modMounted("nl.pa.andreasg.andreasg_map_pack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/andreasg/systems/mots_recipe_for_disaster.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
