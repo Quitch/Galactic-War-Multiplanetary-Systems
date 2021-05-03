@@ -28,4 +28,5 @@ Any maps reliant on server mods have not been included as these will not work in
 - [Poseidons Trident](https://forums.planetaryannihilation.com/threads/poseidons-trident-map-pack.69030/)
 - [Community](https://forums.planetaryannihilation.com/threads/community-map-pack.67523/)
 - Dr Boggles
+- [Genesis](https://forums.planetaryannihilation.com/threads/pa-stats-1v1-ladder-map-pool.64263/)
 - FFA

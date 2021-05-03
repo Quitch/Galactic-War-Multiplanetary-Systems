@@ -239,6 +239,12 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/DrBoggles_Map_Pack/systems/Words-Of-Conviction.pas"
           );
         }
+        if (modMounted("com.pa.conundrum.cMaps_genesis")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/cMaps_genesis/systems/faceoff.pas",
+            "coui://ui/mods/cMaps_genesis/systems/honeypot.pas"
+          );
+        }
         if (modMounted("nl.pa.andreasg.ffa_map_pack")) {
           multiplanetarySystems.push(
             "coui://ui/mods/ffa_map_pack/systems/best_off_ladder.pas"
