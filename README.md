@@ -26,3 +26,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - [eXodus eSports](https://forums.planetaryannihilation.com/threads/exodus-esports-map-pack.71887/)
 - [TokenELT](https://forums.planetaryannihilation.com/threads/rel-client-system-sharing-2.69117/)
 - [Poseidons Trident](https://forums.planetaryannihilation.com/threads/poseidons-trident-map-pack.69030/)
+- FFA

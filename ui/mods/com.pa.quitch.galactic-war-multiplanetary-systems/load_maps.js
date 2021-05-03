@@ -225,6 +225,11 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/PTMP/systems/_unrutned_beta.pas"
           );
         }
+        if (modMounted("nl.pa.andreasg.ffa_map_pack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/ffa_map_pack/systems/best_off_ladder.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
