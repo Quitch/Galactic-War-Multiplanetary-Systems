@@ -37,6 +37,12 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/pwn4two/systems/dualdecahedron.pas"
           );
         }
+        if (modPresent("com.pa.academia.maps")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/academia/systems/aca's_universe - s.pas",
+            "coui://ui/mods/academia/systems/aca's_universe.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
