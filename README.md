@@ -19,3 +19,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - [River](https://forums.planetaryannihilation.com/threads/rivers-mappack.72787/)
 - [WAF](https://forums.planetaryannihilation.com/threads/therealfs-map-pack.72943/)
 - [Zak The Evil](https://forums.planetaryannihilation.com/threads/new-map-pack-zak-the-evils-map-pack-no-02.72314/)
+- [Alpha2546](https://forums.planetaryannihilation.com/threads/alpha2546-maps-kure-atoll-02-11-2016-download-on-pamm.70258/)

@@ -113,6 +113,18 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/zaktheevil/systems/vatiq-system.pas"
           );
         }
+        if (modMounted("nl.pa.Alpha.alpha2546_map_pack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/alpha2546/systems/carnage_system.pas",
+            "coui://ui/mods/alpha2546/systems/rain_v30.pas",
+            "coui://ui/mods/alpha2546/systems/system_f305.pas",
+            "coui://ui/mods/alpha2546/systems/system_f205.pas",
+            "coui://ui/mods/alpha2546/systems/icy_v17.pas",
+            "coui://ui/mods/alpha2546/systems/elrose_v18.pas",
+            "coui://ui/mods/alpha2546/systems/f-405.pas",
+            "coui://ui/mods/alpha2546/systems/system_f301.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
