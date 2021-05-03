@@ -6,10 +6,13 @@ if (!gwMultiplanetarySystemsLoaded) {
   function gwMultiplanetarySystems() {
     try {
       api.mods.getMounted("client", true).then(function (mods) {
-        console.debug(mods);
         var modPresent = function (modIdentifier) {
           return _.some(mods, { identifier: modIdentifier });
         };
+
+        var multiplanetarySystems = [];
+
+        cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
     } catch (e) {
       console.error(e);
