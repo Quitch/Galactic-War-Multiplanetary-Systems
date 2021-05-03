@@ -259,6 +259,12 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/com.flubbateios.mappack/nik/nik2.pas"
           );
         }
+        if (modMounted("com.pa.easybox.mappack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/com.pa.easybox.mappack/systems/homeworld.pas",
+            "coui://ui/mods/com.pa.easybox.mappack/systems/jupiter.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
