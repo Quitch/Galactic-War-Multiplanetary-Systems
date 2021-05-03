@@ -91,6 +91,17 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/river/systems/dual_lake the system.pas"
           );
         }
+        if (modPresent("com.pa.therealf.maps")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/therealf/systems/xvx_or ffa orbital war.pas",
+            "coui://ui/mods/therealf/systems/apx_system.pas",
+            "coui://ui/mods/therealf/systems/star_system.pas",
+            "coui://ui/mods/therealf/systems/moon_galaxy_fight.pas",
+            "coui://ui/mods/therealf/systems/the_skywalker.pas",
+            "coui://ui/mods/therealf/systems/new_far_away_with_gas.pas",
+            "coui://ui/mods/therealf/systems/viroo.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
