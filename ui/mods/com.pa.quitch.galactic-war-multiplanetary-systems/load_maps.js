@@ -86,6 +86,11 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/kingslayergm/systems/2v2v2v2v2_or_5_ffa_planetswar.pas"
           );
         }
+        if (modPresent("nl.pa.river.mappack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/river/systems/dual_lake the system.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });

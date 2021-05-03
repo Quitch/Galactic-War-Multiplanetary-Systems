@@ -16,3 +16,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - [SonicBlue22](https://forums.planetaryannihilation.com/threads/sonicblue22s-map-pack.72538/)
 - [Clan ICARUS](https://forums.planetaryannihilation.com/threads/clan-icarus-map-pack.73237/)
 - [King](https://forums.planetaryannihilation.com/threads/kings-map-pack.73459/)
+- [River](https://forums.planetaryannihilation.com/threads/rivers-mappack.72787/)
