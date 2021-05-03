@@ -188,6 +188,11 @@ if (!gwMultiplanetarySystemsLoaded) {
             filteredDuplicateSystems
           );
         }
+        if (modMounted("com.pa.tokenelt.maps")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/com.pa.tokenelt.maps/systems/gamma_system.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
