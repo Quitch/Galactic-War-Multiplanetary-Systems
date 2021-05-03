@@ -18,3 +18,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - [King](https://forums.planetaryannihilation.com/threads/kings-map-pack.73459/)
 - [River](https://forums.planetaryannihilation.com/threads/rivers-mappack.72787/)
 - [WAF](https://forums.planetaryannihilation.com/threads/therealfs-map-pack.72943/)
+- [Zak The Evil](https://forums.planetaryannihilation.com/threads/new-map-pack-zak-the-evils-map-pack-no-02.72314/)

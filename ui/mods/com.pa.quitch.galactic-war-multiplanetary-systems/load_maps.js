@@ -102,6 +102,17 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/therealf/systems/viroo.pas"
           );
         }
+        if (modPresent("zaktheevil.client.unified.mappack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/zaktheevil/systems/fx211-system.pas",
+            "coui://ui/mods/zaktheevil/systems/garum-system.pas",
+            "coui://ui/mods/zaktheevil/systems/kagamii-nimo-system.pas",
+            "coui://ui/mods/zaktheevil/systems/nu-solg-system.pas",
+            "coui://ui/mods/zaktheevil/systems/tae-mu-ani-system.pas",
+            "coui://ui/mods/zaktheevil/systems/tamarid-system.pas",
+            "coui://ui/mods/zaktheevil/systems/vatiq-system.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
