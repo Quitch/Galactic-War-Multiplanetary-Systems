@@ -149,19 +149,43 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]worlds_collide.pas"
           );
         }
-        if (modMounted("com.exodusesports.tournamentmappack")) {
-          multiplanetarySystems.push(
+        if (modMounted("com.exodusesports.tournamentmappack-dev")) {
+          var filteredDuplicateSystems = [];
+          if (!modMounted("nl.pa.wpmarshall.wpmarshall_map_pack")) {
+            filteredDuplicateSystems.push(
+              "coui://ui/mods/maps/systems/marshalls_lament_titans.pas"
+            );
+          }
+          if (!modMounted("nl.pa.andreasg.andreasg_map_pack")) {
+            filteredDuplicateSystems.push(
+              "coui://ui/mods/maps/systems/mots_recipe_for_disaster_original.pas"
+            );
+          }
+          if (!modMounted("com.pa.elite.team_burning_systems")) {
+            filteredDuplicateSystems.push(
+              "coui://ui/mods/maps/systems/omega_belt.pas"
+            );
+          }
+          if (!modMounted("nl.pa.Alpha.alpha2546_map_pack")) {
+            filteredDuplicateSystems.push(
+              "coui://ui/mods/maps/systems/icy_v17.pas",
+              "coui://ui/mods/maps/systems/elrose_v18.pas",
+              "coui://ui/mods/maps/systems/t-_rain_system.pas"
+            );
+          }
+          if (!modMounted("nl.pa.Pwn4two.pwn4two_map_pack")) {
+            filteredDuplicateSystems.push(
+              "coui://ui/mods/maps/systems/war_of the worlds.pas"
+            );
+          }
+          filteredDuplicateSystems.push(
             "coui://ui/mods/maps/systems/bang_battle.pas",
             "coui://ui/mods/maps/systems/burnt_playground.pas",
-            "coui://ui/mods/maps/systems/marshalls_lament_titans.pas",
-            "coui://ui/mods/maps/systems/mots_recipe_for_disaster_original.pas",
             "coui://ui/mods/maps/systems/mots_recipe_for_disaster.pas",
-            "coui://ui/mods/maps/systems/omega_belt.pas",
-            "coui://ui/mods/maps/systems/icy_v17.pas",
-            "coui://ui/mods/maps/systems/elrose_v18.pas",
-            "coui://ui/mods/maps/systems/t-_rain_system.pas",
-            "coui://ui/mods/maps/systems/twbaby.pas",
-            "coui://ui/mods/maps/systems/war_of the worlds.pas"
+            "coui://ui/mods/maps/systems/twbaby.pas"
+          );
+          multiplanetarySystems = multiplanetarySystems.concat(
+            filteredDuplicateSystems
           );
         }
 
