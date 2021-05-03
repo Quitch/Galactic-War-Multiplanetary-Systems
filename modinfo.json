@@ -1,0 +1,20 @@
+{
+  "context": "client",
+  "identifier": "com.pa.quitch.galactic-war-multiplanetary-systems-dev",
+  "display_name": "Galactic War Multiplanetary Systems DEV",
+  "description": "Collates multiplanetary systems with multiplanetary starts into a single tab for use with Shared Systems for Galactic War. Does not come with any maps, it uses maps from your currently installed and active map packs. See forum thread for details of supported map packs.",
+  "author": "Quitch",
+  "version": "#.#.#",
+  "build": "115626",
+  "date": "2021-05-03",
+  "signature": " ",
+  "forum": "https://forums.planetaryannihilation.com/threads/exodus-esports-map-pack.71887/",
+  "icon": "https://raw.githubusercontent.com/Quitch/Galactic-War-Multiplanetary-Systems/develop/images/icon.gif",
+  "category": ["maps", "gw", "classic", "titans"],
+  "load_planet": [
+    "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/load_maps.js"
+  ],
+  "priority": 100,
+  "dependencies": ["com.wondible.pa.gw_shared_systems"],
+  "github": "https://github.com/Quitch/Galactic-War-Multiplanetary-Systems"
+}
