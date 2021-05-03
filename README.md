@@ -15,3 +15,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - TheEffectTheCause
 - SonicBlue22
 - Clan ICARUS
+- [King](https://forums.planetaryannihilation.com/threads/kings-map-pack.73459/)

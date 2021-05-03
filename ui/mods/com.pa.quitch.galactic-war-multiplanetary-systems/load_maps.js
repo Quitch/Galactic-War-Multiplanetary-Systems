@@ -79,6 +79,13 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/icarus/systems/anon/system-surge ds 3x3-3x5.pas"
           );
         }
+        if (modPresent("com.pa.kingslayergm.maps")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/kingslayergm/systems/2v2v2_or_3v3v3_or_3_ffa_or_9_ffa_tripleplanet.pas",
+            "coui://ui/mods/kingslayergm/systems/2v2v2v2_or_4v4_biplanet.pas",
+            "coui://ui/mods/kingslayergm/systems/2v2v2v2v2_or_5_ffa_planetswar.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
