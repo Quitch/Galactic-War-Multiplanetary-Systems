@@ -61,6 +61,24 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/SonicBlue22/systems/wreck.pas"
           );
         }
+        if (modPresent("com.pa.dissonant.icarusmaps")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/icarus/systems/anon/battle_of midway 5v5 ns.pas",
+            "coui://ui/mods/icarus/systems/anon/intrepid_16 ffa.pas",
+            "coui://ui/mods/icarus/systems/anon/kuiper_18 ffa.pas",
+            "coui://ui/mods/icarus/systems/anon/guns_24 ffa.pas",
+            "coui://ui/mods/icarus/systems/anon/kersmash_32 ffa.pas",
+            "coui://ui/mods/icarus/systems/anon/the_maul 32 ffa.pas",
+            "coui://ui/mods/icarus/systems/anon/beasts_ds 4v4-8v8.pas",
+            "coui://ui/mods/icarus/systems/anon/pebbles_ds 4v4-8v8.pas",
+            "coui://ui/mods/icarus/systems/anon/system-shock_ds 5v5-10v10.pas",
+            "coui://ui/mods/icarus/systems/anon/tale_of_two_worlds ds 6v6-8v8.pas",
+            "coui://ui/mods/icarus/systems/anon/system-double_ds 8v8-10v10.pas",
+            "coui://ui/mods/icarus/systems/anon/system_re-boot ds 8v8-16v16.pas",
+            "coui://ui/mods/icarus/systems/anon/system-crash ds 10v10-16v16.pas",
+            "coui://ui/mods/icarus/systems/anon/system-surge ds 3x3-3x5.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });

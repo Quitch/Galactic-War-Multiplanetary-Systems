@@ -14,3 +14,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - Academia
 - TheEffectTheCause
 - SonicBlue22
+- Clan ICARUS
