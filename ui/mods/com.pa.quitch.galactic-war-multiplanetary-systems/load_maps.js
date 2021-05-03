@@ -250,6 +250,15 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/ffa_map_pack/systems/best_off_ladder.pas"
           );
         }
+        if (modMounted("com.flubbateios.mappack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/com.flubbateios.mappack/flubb/iron_ball.pas",
+            "coui://ui/mods/com.flubbateios.mappack/flubb/dennis_the_menace_v3.pas",
+            "coui://ui/mods/com.flubbateios.mappack/flubb/desserted.pas",
+            "coui://ui/mods/com.flubbateios.mappack/nik/french_date.pas",
+            "coui://ui/mods/com.flubbateios.mappack/nik/nik2.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });

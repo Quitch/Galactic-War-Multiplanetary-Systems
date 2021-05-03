@@ -30,3 +30,4 @@ Any maps reliant on server mods have not been included as these will not work in
 - Dr Boggles
 - [Genesis](https://forums.planetaryannihilation.com/threads/pa-stats-1v1-ladder-map-pool.64263/)
 - FFA
+- [flubb](https://forums.planetaryannihilation.com/threads/flubbs-tremendous-map-pack.72345/)
