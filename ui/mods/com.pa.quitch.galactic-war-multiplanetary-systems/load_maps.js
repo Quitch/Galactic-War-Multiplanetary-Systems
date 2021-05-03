@@ -130,6 +130,11 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/andreasg/systems/mots_recipe_for_disaster.pas"
           );
         }
+        if (modMounted("nl.pa.Alpha.violetania_map_pack")) {
+          multiplanetarySystems.push(
+            "coui://ui/mods/violetania/systems/lana's_heart.pas"
+          );
+        }
 
         cShareSystems.load_pas("Multiplanetary", multiplanetarySystems);
       });
