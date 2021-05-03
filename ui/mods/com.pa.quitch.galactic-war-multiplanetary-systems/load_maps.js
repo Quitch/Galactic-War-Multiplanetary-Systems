@@ -154,7 +154,7 @@ if (!gwMultiplanetarySystemsLoaded) {
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]worlds_collide.pas"
           );
         }
-        if (modMounted("com.exodusesports.tournamentmappack-dev")) {
+        if (modMounted("com.exodusesports.tournamentmappack")) {
           var filteredDuplicateSystems = [
             "coui://ui/mods/maps/systems/bang_battle.pas",
             "coui://ui/mods/maps/systems/burnt_playground.pas",
