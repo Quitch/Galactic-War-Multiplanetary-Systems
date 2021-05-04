@@ -10,6 +10,12 @@ Any maps reliant on server mods have not been included as these will not work in
 
 Download and install this mod via the Planetary Annihilation TITANS in-game [Community Mods](https://steamcommunity.com/sharedfiles/filedetails/?id=1417396826).
 
+## How To Use
+
+1. Install the mod
+2. Install map packs from the Support Map Packs list
+3. On the Galactic War Loadout screen select "GWMS Multiplanetary" from the systems list
+
 ## Supported Map Packs
 
 - [Academia](https://forums.planetaryannihilation.com/threads/academia-map-pack.73511/)
