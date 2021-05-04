@@ -13,10 +13,10 @@
   "category": ["maps", "gw", "classic", "titans"],
   "scenes": {
     "start": [
-      "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/check_mods.js"
+      "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/start/check_mods.js"
     ],
     "load_planet": [
-      "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/load_maps.js"
+      "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/load_planet/load_maps.js"
     ]
   },
   "priority": 100,
