@@ -3,7 +3,7 @@ var gwaioMountedClientModsLoaded;
 if (!gwaioMountedClientModsLoaded) {
   gwaioMountedClientModsLoaded = true;
 
-  function gwaioMountedClientModsCheckMods() {
+  function gwMultiplanetarySystems() {
     try {
       api.mods.getMounted("client", true).then(function (mods) {
         var modMounted = function (modIdentifier) {
@@ -273,5 +273,5 @@ if (!gwaioMountedClientModsLoaded) {
       console.error(JSON.stringify(e));
     }
   }
-  gwaioMountedClientModsCheckMods();
+  gwMultiplanetarySystems();
 }
