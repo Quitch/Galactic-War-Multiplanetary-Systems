@@ -1,7 +1,7 @@
-var gwMultiplanetarySystemsLoaded;
+var gwmsMultiplanetarySystemsLoaded;
 
-if (!gwMultiplanetarySystemsLoaded) {
-  gwMultiplanetarySystemsLoaded = true;
+if (!gwmsMultiplanetarySystemsLoaded) {
+  gwmsMultiplanetarySystemsLoaded = true;
 
   function gwMultiplanetarySystems() {
     try {
@@ -10,18 +10,18 @@ if (!gwMultiplanetarySystemsLoaded) {
           return _.some(mods, { identifier: modIdentifier });
         };
 
-        model.gwaioMountedClientMods = ko
+        model.gwmsMountedClientMods = ko
           .observableArray()
-          .extend({ session: "gwaio_mounted_client_mods" });
+          .extend({ session: "gwms_mounted_client_mods" });
 
         if (modMounted("com.pa.grandhomie.maps")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/grandhomie/systems/32_ffa.pas"
           );
         }
         if (modMounted("nl.pa.wpmarshall.wpmarshall_map_pack")) {
           var wpmarshallMounted = true;
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/wpmarshall/systems/(1v1)_ubersdkhto.pas",
             "coui://ui/mods/wpmarshall/systems/(5v5)_marshall's_lament (classic).pas",
             "coui://ui/mods/wpmarshall/systems/(5v5)_marshall's_lament (redux).pas",
@@ -31,7 +31,7 @@ if (!gwMultiplanetarySystemsLoaded) {
         }
         if (modMounted("nl.pa.Pwn4two.pwn4two_map_pack")) {
           var pwn4twoMounted = true;
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/pwn4two/systems/icecream_donut utensil.pas",
             "coui://ui/mods/pwn4two/systems/war_of the worlds.pas",
             "coui://ui/mods/pwn4two/systems/attack_on titan.pas",
@@ -42,19 +42,19 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("com.pa.academia.maps")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/academia/systems/aca's_universe - s.pas",
             "coui://ui/mods/academia/systems/aca's_universe.pas"
           );
         }
         if (modMounted("uk.pa.tetcmappack")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/tetcmp1/systems/tg1v1.pas",
             "coui://ui/mods/tetcmp1/systems/saturn.pas"
           );
         }
         if (modMounted("com.pa.sonicblue22.maps")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/SonicBlue22/systems/destroyer.pas",
             "coui://ui/mods/SonicBlue22/systems/mega_asteroids.pas",
             "coui://ui/mods/SonicBlue22/systems/rice.pas",
@@ -66,7 +66,7 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("com.pa.dissonant.icarusmaps")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/icarus/systems/anon/battle_of midway 5v5 ns.pas",
             "coui://ui/mods/icarus/systems/anon/intrepid_16 ffa.pas",
             "coui://ui/mods/icarus/systems/anon/kuiper_18 ffa.pas",
@@ -84,19 +84,19 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("com.pa.kingslayergm.maps")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/kingslayergm/systems/2v2v2_or_3v3v3_or_3_ffa_or_9_ffa_tripleplanet.pas",
             "coui://ui/mods/kingslayergm/systems/2v2v2v2_or_4v4_biplanet.pas",
             "coui://ui/mods/kingslayergm/systems/2v2v2v2v2_or_5_ffa_planetswar.pas"
           );
         }
         if (modMounted("nl.pa.river.mappack")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/river/systems/dual_lake the system.pas"
           );
         }
         if (modMounted("com.pa.therealf.maps")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/therealf/systems/xvx_or ffa orbital war.pas",
             "coui://ui/mods/therealf/systems/apx_system.pas",
             "coui://ui/mods/therealf/systems/star_system.pas",
@@ -107,7 +107,7 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("zaktheevil.client.unified.mappack")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/zaktheevil/systems/fx211-system.pas",
             "coui://ui/mods/zaktheevil/systems/garum-system.pas",
             "coui://ui/mods/zaktheevil/systems/kagamii-nimo-system.pas",
@@ -119,7 +119,7 @@ if (!gwMultiplanetarySystemsLoaded) {
         }
         if (modMounted("nl.pa.Alpha.alpha2546_map_pack")) {
           var alpha2546Mounted = true;
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/alpha2546/systems/carnage_system.pas",
             "coui://ui/mods/alpha2546/systems/rain_v30.pas",
             "coui://ui/mods/alpha2546/systems/system_f305.pas",
@@ -132,18 +132,18 @@ if (!gwMultiplanetarySystemsLoaded) {
         }
         if (modMounted("nl.pa.andreasg.andreasg_map_pack")) {
           var andreasgMounted = true;
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/andreasg/systems/mots_recipe_for_disaster.pas"
           );
         }
         if (modMounted("nl.pa.Alpha.violetania_map_pack")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/violetania/systems/lana's_heart.pas"
           );
         }
         if (modMounted("com.pa.elite.team_burning_systems")) {
           var teamBurningMounted;
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]canopus_system.pas",
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]gemini_belt.pas",
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]mek_whipping grounds (5).pas",
@@ -190,17 +190,17 @@ if (!gwMultiplanetarySystemsLoaded) {
               "coui://ui/mods/maps/systems/war_of the worlds.pas"
             );
           }
-          model.gwaioMountedClientMods = model.gwaioMountedClientMods.concat(
+          model.gwmsMountedClientMods = model.gwmsMountedClientMods.concat(
             filteredDuplicateSystems
           );
         }
         if (modMounted("com.pa.tokenelt.maps")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/com.pa.tokenelt.maps/systems/gamma_system.pas"
           );
         }
         if (modMounted("com.pa.tesseracta.client.maps")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/PTMP/systems/alpha_centauri a.pas",
             "coui://ui/mods/PTMP/systems/alpha_draconois.pas",
             "coui://ui/mods/PTMP/systems/beta_draconois.pas",
@@ -228,13 +228,13 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("Community_Map_Pack")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/CMP/systems/gemini_belt.pas",
             "coui://ui/mods/CMP/systems/canopus_system.pas"
           );
         }
         if (modMounted("DrBoggles")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/DrBoggles_Map_Pack/systems/Brahma.pas",
             "coui://ui/mods/DrBoggles_Map_Pack/systems/Kronos.pas",
             "coui://ui/mods/DrBoggles_Map_Pack/systems/Vixitores Duel.pas",
@@ -242,18 +242,18 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("com.pa.conundrum.cMaps_genesis")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/cMaps_genesis/systems/faceoff.pas",
             "coui://ui/mods/cMaps_genesis/systems/honeypot.pas"
           );
         }
         if (modMounted("nl.pa.andreasg.ffa_map_pack")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/ffa_map_pack/systems/best_off_ladder.pas"
           );
         }
         if (modMounted("com.flubbateios.mappack")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/com.flubbateios.mappack/flubb/iron_ball.pas",
             "coui://ui/mods/com.flubbateios.mappack/flubb/dennis_the_menace_v3.pas",
             "coui://ui/mods/com.flubbateios.mappack/flubb/desserted.pas",
@@ -262,7 +262,7 @@ if (!gwMultiplanetarySystemsLoaded) {
           );
         }
         if (modMounted("com.pa.easybox.mappack")) {
-          model.gwaioMountedClientMods.push(
+          model.gwmsMountedClientMods.push(
             "coui://ui/mods/com.pa.easybox.mappack/systems/homeworld.pas",
             "coui://ui/mods/com.pa.easybox.mappack/systems/jupiter.pas"
           );
