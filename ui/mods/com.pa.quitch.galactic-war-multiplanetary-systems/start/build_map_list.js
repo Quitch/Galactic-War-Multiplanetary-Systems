@@ -204,7 +204,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
               "coui://ui/mods/maps/systems/omega_belt.pas"
             );
           }
-          if (alpha2546Mounted) {
+          if (!alpha2546Mounted) {
             filteredDuplicateSystems.push(
               "coui://ui/mods/maps/systems/icy_v17.pas",
               "coui://ui/mods/maps/systems/elrose_v18.pas",
