@@ -1,7 +1,7 @@
-var gwaioMountedClientModsLoaded;
+var gwMultiplanetarySystemsLoaded;
 
-if (!gwaioMountedClientModsLoaded) {
-  gwaioMountedClientModsLoaded = true;
+if (!gwMultiplanetarySystemsLoaded) {
+  gwMultiplanetarySystemsLoaded = true;
 
   function gwMultiplanetarySystems() {
     try {
