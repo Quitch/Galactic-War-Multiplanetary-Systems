@@ -5,6 +5,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
 
   function gwMultiplanetarySystems() {
     try {
+      // Async means we don't load in time for Shared Systems for Galactic War so we do this in start scene
       api.mods.getMounted("client", true).then(function (mods) {
         var modMounted = function (modIdentifier) {
           return _.some(mods, { identifier: modIdentifier });
@@ -13,7 +14,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
         self.gwmsMountedClientMods = ko
           .observableArray()
           .extend({ session: "gwms_mounted_client_mods" });
-        self.gwmsMountedClientMods([]);
+        self.gwmsMountedClientMods([]); // Reset to avoid duplicating previous entries since we can't tell if mods have changed
 
         if (modMounted("com.pa.grandhomie.maps")) {
           self
