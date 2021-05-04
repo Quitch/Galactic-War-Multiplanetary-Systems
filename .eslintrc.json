@@ -13,7 +13,9 @@
   "globals": {
     "cShareSystems": "readonly",
     "api": "readonly",
-    "_": "readonly"
+    "_": "readonly",
+    "model": "readonly",
+    "ko": "readonly"
   },
   "plugins": ["lodash"],
   "rules": {
