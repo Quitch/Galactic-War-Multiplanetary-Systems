@@ -13,7 +13,7 @@ Download and install this mod via the Planetary Annihilation TITANS in-game [Com
 ## How to Use
 
 1. Install the mod
-2. Install map packs from the Support Map Packs list
+2. Install map packs from the supported map packs list
 3. On the Galactic War Loadout screen select "GWMS Multiplanetary" from the systems list
 
 ## Supported Map Packs
