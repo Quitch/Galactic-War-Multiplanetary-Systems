@@ -6,6 +6,10 @@ Maps are not included with this mod, instead it will load in maps from map packs
 
 Any maps reliant on server mods have not been included as these will not work in Galactic War.
 
+## Installation
+
+Download and install this mod via the Planetary Annihilation TITANS in-game [Community Mods](https://steamcommunity.com/sharedfiles/filedetails/?id=1417396826).
+
 ## Supported Map Packs
 
 - [Academia](https://forums.planetaryannihilation.com/threads/academia-map-pack.73511/)
