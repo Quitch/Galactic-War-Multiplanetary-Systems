@@ -13,6 +13,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
         self.gwmsMountedClientMods = ko
           .observableArray()
           .extend({ session: "gwms_mounted_client_mods" });
+        self.gwmsMountedClientMods([]);
 
         if (modMounted("com.pa.grandhomie.maps")) {
           self
