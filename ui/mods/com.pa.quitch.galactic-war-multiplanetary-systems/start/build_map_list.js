@@ -5,16 +5,17 @@ if (!gwmsMultiplanetarySystemsLoaded) {
 
   function gwMultiplanetarySystems() {
     try {
-      // Async means we don't load in time for Shared Systems for Galactic War so we do this in start scene
       api.mods.getMounted("client", true).then(function (mods) {
         var modMounted = function (modIdentifier) {
           return _.some(mods, { identifier: modIdentifier });
         };
 
+        // Async means we don't load in time for Shared Systems for Galactic War
+        // so we write to a session identifier we can use in the gw_start scene
         self.gwmsMountedClientMods = ko
           .observableArray()
           .extend({ session: "gwms_mounted_client_mods" });
-        self.gwmsMountedClientMods([]); // Reset to avoid duplicating previous entries since we can't tell if mods have changed
+        self.gwmsMountedClientMods([]); // We can't tell if mods have changed so we rebuild from scratch
 
         if (modMounted("com.pa.grandhomie.maps")) {
           self
@@ -307,6 +308,8 @@ if (!gwmsMultiplanetarySystemsLoaded) {
               "coui://ui/mods/com.pa.easybox.mappack/systems/jupiter.pas"
             );
         }
+
+        self.gwmsMountedClientMods.valueHasMutated();
       });
     } catch (e) {
       console.error(e);
