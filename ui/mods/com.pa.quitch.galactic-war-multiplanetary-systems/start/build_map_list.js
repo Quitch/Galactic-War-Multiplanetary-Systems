@@ -308,6 +308,8 @@ if (!gwmsMultiplanetarySystemsLoaded) {
               "coui://ui/mods/com.pa.easybox.mappack/systems/jupiter.pas"
             );
         }
+
+        self.gwmsMountedClientMods.valueHasMutated();
       });
     } catch (e) {
       console.error(e);
