@@ -2,7 +2,7 @@
   "context": "client",
   "identifier": "com.pa.quitch.galactic-war-multiplanetary-systems-dev",
   "display_name": "Galactic War Multiplanetary Systems DEV",
-  "description": "Collates multiplanetary systems with multiplanetary starts to allow players to easily add a wide array of multiplanetary systems to their Galactic War. Does not come with any maps, it uses maps from your currently installed and active map packs. See forum thread for details of supported map packs.",
+  "description": "Collates multiplanetary systems with multiplanetary starts into the singular GWMS Multiplanetary tab for use with Shared Systems for Galactic War. Does not come with any maps, it uses maps from your currently installed and active map packs. See forum thread for details of supported map packs.",
   "author": "Quitch",
   "version": "1.0.1",
   "build": "115626",
