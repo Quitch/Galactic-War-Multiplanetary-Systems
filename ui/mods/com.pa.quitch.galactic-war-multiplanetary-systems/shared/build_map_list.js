@@ -168,40 +168,35 @@ if (!gwmsMultiplanetarySystemsLoaded) {
         }
         // eXodus eSports Map Pack
         if (modMounted("com.exodusesports.tournamentmappack")) {
-          var filteredDuplicateSystems = [
+          maps.push(
             "coui://ui/mods/maps/systems/bang_battle.pas",
             "coui://ui/mods/maps/systems/burnt_playground.pas",
             "coui://ui/mods/maps/systems/mots_recipe_for_disaster.pas",
-            "coui://ui/mods/maps/systems/twbaby.pas",
-          ];
+            "coui://ui/mods/maps/systems/twbaby.pas"
+          );
           if (!wpmarshallMounted) {
-            filteredDuplicateSystems.push(
+            maps.push(
               "coui://ui/mods/maps/systems/marshalls_lament_titans.pas"
             );
           }
           if (!andreasgMounted) {
-            filteredDuplicateSystems.push(
+            maps.push(
               "coui://ui/mods/maps/systems/mots_recipe_for_disaster_original.pas"
             );
           }
           if (!teamBurningMounted) {
-            filteredDuplicateSystems.push(
-              "coui://ui/mods/maps/systems/omega_belt.pas"
-            );
+            maps.push("coui://ui/mods/maps/systems/omega_belt.pas");
           }
           if (!alpha2546Mounted) {
-            filteredDuplicateSystems.push(
+            maps.push(
               "coui://ui/mods/maps/systems/icy_v17.pas",
               "coui://ui/mods/maps/systems/elrose_v18.pas",
               "coui://ui/mods/maps/systems/t-_rain_system.pas"
             );
           }
           if (!pwn4twoMounted) {
-            filteredDuplicateSystems.push(
-              "coui://ui/mods/maps/systems/war_of the worlds.pas"
-            );
+            maps.push("coui://ui/mods/maps/systems/war_of the worlds.pas");
           }
-          maps = maps.concat(filteredDuplicateSystems);
         }
         // TokenELT maps
         if (modMounted("com.pa.tokenelt.maps")) {
