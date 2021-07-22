@@ -15,9 +15,11 @@ if (!gwmsMultiplanetarySystemsLoaded) {
           return _.some(mods, { identifier: modIdentifier });
         };
 
+        // Grand Homie's Map Pack
         if (modMounted("com.pa.grandhomie.maps")) {
           maps.push("coui://ui/mods/grandhomie/systems/32_ffa.pas");
         }
+        // WPMarshall's Map Pack
         if (modMounted("nl.pa.wpmarshall.wpmarshall_map_pack")) {
           var wpmarshallMounted = true;
           maps.push(
@@ -28,6 +30,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/wpmarshall/systems/(5v5)_world_of tomorrow 2.1.0.pas"
           );
         }
+        // Pwn4two's Map Pack
         if (modMounted("nl.pa.Pwn4two.pwn4two_map_pack")) {
           var pwn4twoMounted = true;
           maps.push(
@@ -40,18 +43,21 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/pwn4two/systems/dualdecahedron.pas"
           );
         }
+        // Academia Map Pack
         if (modMounted("com.pa.academia.maps")) {
           maps.push(
             "coui://ui/mods/academia/systems/aca's_universe - s.pas",
             "coui://ui/mods/academia/systems/aca's_universe.pas"
           );
         }
+        // TheEffectTheCause's Map Pack
         if (modMounted("uk.pa.tetcmappack")) {
           maps.push(
             "coui://ui/mods/tetcmp1/systems/tg1v1.pas",
             "coui://ui/mods/tetcmp1/systems/saturn.pas"
           );
         }
+        // SonicBlue22's Old Map Pack
         if (modMounted("com.pa.sonicblue22.maps")) {
           maps.push(
             "coui://ui/mods/SonicBlue22/systems/destroyer.pas",
@@ -64,6 +70,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/SonicBlue22/systems/wreck.pas"
           );
         }
+        // Clan ICARUS Map Pack
         if (modMounted("com.pa.dissonant.icarusmaps")) {
           maps.push(
             "coui://ui/mods/icarus/systems/anon/battle_of midway 5v5 ns.pas",
@@ -82,6 +89,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/icarus/systems/anon/system-surge ds 3x3-3x5.pas"
           );
         }
+        // King's Map Pack
         if (modMounted("com.pa.kingslayergm.maps")) {
           maps.push(
             "coui://ui/mods/kingslayergm/systems/2v2v2_or_3v3v3_or_3_ffa_or_9_ffa_tripleplanet.pas",
@@ -89,9 +97,11 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/kingslayergm/systems/2v2v2v2v2_or_5_ffa_planetswar.pas"
           );
         }
+        // River's Map Pack
         if (modMounted("nl.pa.river.mappack")) {
           maps.push("coui://ui/mods/river/systems/dual_lake the system.pas");
         }
+        // [WAF] Map Pack
         if (modMounted("com.pa.therealf.maps")) {
           maps.push(
             "coui://ui/mods/therealf/systems/xvx_or ffa orbital war.pas",
@@ -103,6 +113,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/therealf/systems/viroo.pas"
           );
         }
+        // Zak The Evil's Unified Mpa Pack
         if (modMounted("zaktheevil.client.unified.mappack")) {
           maps.push(
             "coui://ui/mods/zaktheevil/systems/fx211-system.pas",
@@ -114,6 +125,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/zaktheevil/systems/vatiq-system.pas"
           );
         }
+        // Alpha 2546 Map Pack
         if (modMounted("nl.pa.Alpha.alpha2546_map_pack")) {
           var alpha2546Mounted = true;
           maps.push(
@@ -127,15 +139,18 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/alpha2546/systems/system_f301.pas"
           );
         }
+        // AndreasG 1v1 Map Pack
         if (modMounted("nl.pa.andreasg.andreasg_map_pack")) {
           var andreasgMounted = true;
           maps.push(
             "coui://ui/mods/andreasg/systems/mots_recipe_for_disaster.pas"
           );
         }
+        // The Lana Series Maps by Violet Ania
         if (modMounted("nl.pa.Alpha.violetania_map_pack")) {
           maps.push("coui://ui/mods/violetania/systems/lana's_heart.pas");
         }
+        // Team Burning Systems
         if (modMounted("com.pa.elite.team_burning_systems")) {
           var teamBurningMounted;
           maps.push(
@@ -151,6 +166,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]worlds_collide.pas"
           );
         }
+        // eXodus eSports Map Pack
         if (modMounted("com.exodusesports.tournamentmappack")) {
           var filteredDuplicateSystems = [
             "coui://ui/mods/maps/systems/bang_battle.pas",
@@ -187,11 +203,13 @@ if (!gwmsMultiplanetarySystemsLoaded) {
           }
           maps = maps.concat(filteredDuplicateSystems);
         }
+        // TokenELT maps
         if (modMounted("com.pa.tokenelt.maps")) {
           maps.push(
             "coui://ui/mods/com.pa.tokenelt.maps/systems/gamma_system.pas"
           );
         }
+        // Poseidons Triden Map Pack
         if (modMounted("com.pa.tesseracta.client.maps")) {
           maps.push(
             "coui://ui/mods/PTMP/systems/alpha_centauri a.pas",
@@ -220,12 +238,14 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/PTMP/systems/_unrutned_beta.pas"
           );
         }
+        // Community Map Pack
         if (modMounted("Community_Map_Pack")) {
           maps.push(
             "coui://ui/mods/CMP/systems/gemini_belt.pas",
             "coui://ui/mods/CMP/systems/canopus_system.pas"
           );
         }
+        // DrBoggles Competitive Map Pack
         if (modMounted("DrBoggles")) {
           maps.push(
             "coui://ui/mods/DrBoggles_Map_Pack/systems/Brahma.pas",
@@ -234,15 +254,18 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/DrBoggles_Map_Pack/systems/Words-Of-Conviction.pas"
           );
         }
+        // Genesis Offline Map Pack
         if (modMounted("com.pa.conundrum.cMaps_genesis")) {
           maps.push(
             "coui://ui/mods/cMaps_genesis/systems/faceoff.pas",
             "coui://ui/mods/cMaps_genesis/systems/honeypot.pas"
           );
         }
+        // FFA Map Pack
         if (modMounted("nl.pa.andreasg.ffa_map_pack")) {
           maps.push("coui://ui/mods/ffa_map_pack/systems/best_off_ladder.pas");
         }
+        // flubb's Tremendous Map Pack
         if (modMounted("com.flubbateios.mappack")) {
           maps.push(
             "coui://ui/mods/com.flubbateios.mappack/flubb/iron_ball.pas",
@@ -252,6 +275,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
             "coui://ui/mods/com.flubbateios.mappack/nik/nik2.pas"
           );
         }
+        // easy.box' Map Pack
         if (modMounted("com.pa.easybox.mappack")) {
           maps.push(
             "coui://ui/mods/com.pa.easybox.mappack/systems/homeworld.pas",
