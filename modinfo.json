@@ -12,11 +12,11 @@
   "icon": "https://raw.githubusercontent.com/Quitch/Galactic-War-Multiplanetary-Systems/develop/images/icon.png",
   "category": ["maps", "gw", "classic", "titans"],
   "scenes": {
-    "start": [
-      "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/start/build_map_list.js"
-    ],
     "load_planet": [
-      "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/load_planet/build_map_tab.js"
+      "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js"
+    ],
+    "gw_start": [
+      "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js"
     ]
   },
   "priority": 100,
