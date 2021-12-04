@@ -152,7 +152,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
         }
         // Team Burning Systems
         if (modMounted("com.pa.elite.team_burning_systems")) {
-          var teamBurningMounted;
+          var teamBurningMounted = true;
           maps.push(
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]canopus_system.pas",
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]gemini_belt.pas",
