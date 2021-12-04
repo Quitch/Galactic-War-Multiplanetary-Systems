@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v1.0.3 - 2021-12-04
 
 - Fixed Team Burning Systems Omega Belt potentially being loaded twice
 
