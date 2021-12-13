@@ -20,8 +20,9 @@ if (!gwmsMultiplanetarySystemsLoaded) {
           maps.push("coui://ui/mods/grandhomie/systems/32_ffa.pas");
         }
         // WPMarshall's Map Pack
+        var wpmarshallMounted = false;
         if (modMounted("nl.pa.wpmarshall.wpmarshall_map_pack")) {
-          var wpmarshallMounted = true;
+          wpmarshallMounted = true;
           maps.push(
             "coui://ui/mods/wpmarshall/systems/(1v1)_ubersdkhto.pas",
             "coui://ui/mods/wpmarshall/systems/(5v5)_marshall's_lament (classic).pas",
@@ -31,8 +32,9 @@ if (!gwmsMultiplanetarySystemsLoaded) {
           );
         }
         // Pwn4two's Map Pack
+        var pwn4twoMounted = false;
         if (modMounted("nl.pa.Pwn4two.pwn4two_map_pack")) {
-          var pwn4twoMounted = true;
+          pwn4twoMounted = true;
           maps.push(
             "coui://ui/mods/pwn4two/systems/icecream_donut utensil.pas",
             "coui://ui/mods/pwn4two/systems/war_of the worlds.pas",
@@ -126,8 +128,9 @@ if (!gwmsMultiplanetarySystemsLoaded) {
           );
         }
         // Alpha 2546 Map Pack
+        var alpha2546Mounted = false;
         if (modMounted("nl.pa.Alpha.alpha2546_map_pack")) {
-          var alpha2546Mounted = true;
+          alpha2546Mounted = true;
           maps.push(
             "coui://ui/mods/alpha2546/systems/carnage_system.pas",
             "coui://ui/mods/alpha2546/systems/rain_v30.pas",
@@ -140,8 +143,9 @@ if (!gwmsMultiplanetarySystemsLoaded) {
           );
         }
         // AndreasG 1v1 Map Pack
+        var andreasgMounted = false;
         if (modMounted("nl.pa.andreasg.andreasg_map_pack")) {
-          var andreasgMounted = true;
+          andreasgMounted = true;
           maps.push(
             "coui://ui/mods/andreasg/systems/mots_recipe_for_disaster.pas"
           );
@@ -151,8 +155,9 @@ if (!gwmsMultiplanetarySystemsLoaded) {
           maps.push("coui://ui/mods/violetania/systems/lana's_heart.pas");
         }
         // Team Burning Systems
+        var teamBurningMounted = false;
         if (modMounted("com.pa.elite.team_burning_systems")) {
-          var teamBurningMounted = true;
+          teamBurningMounted = true;
           maps.push(
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]canopus_system.pas",
             "coui://ui/mods/Team_Burning_Systems/systems/[tbs]gemini_belt.pas",
