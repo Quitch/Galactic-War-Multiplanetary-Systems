@@ -14,4 +14,4 @@ If you are using [PA Mod Manager (PAMM)](https://steamcommunity.com/sharedfiles/
 
 1. Install the mod
 2. Install map packs from the supported map packs list
-3. On the Galactic War Loadout screen select either "GWMS Multiplanetary" or "GWMS Multiplanetary Starts" from the systems list (not both)
+3. On the Galactic War Loadout screen select either "Multiplanetary Systems" or "Multiplanetary Spawns" from the systems list (not both)
