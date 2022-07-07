@@ -46,8 +46,8 @@ if (!multiplanetarySystemsLoadedLoaded) {
         });
 
         $.when.apply($, deferredQueue).then(function () {
-          cShareSystems.load_pas("GWMS Multiplanetary", multiplanetaryMaps);
-          cShareSystems.load_pas("GWMS Multiplanetary Starts", multiStartMaps);
+          cShareSystems.load_pas("Multiplanetary Systems", multiplanetaryMaps);
+          cShareSystems.load_pas("Multiplanetary Spawns", multiStartMaps);
         });
       });
     } catch (e) {
