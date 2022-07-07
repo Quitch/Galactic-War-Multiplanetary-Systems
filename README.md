@@ -4,8 +4,6 @@ Collates multiplanetary systems with multiplanetary starts into a single map tab
 
 Maps are not included with this mod; they are loaded in maps from map packs you already have installed.
 
-Any maps reliant on server mods have not been included as these will not work in Galactic War.
-
 ## Installation
 
 Download and install this mod via the Planetary Annihilation TITANS in-game [Community Mods](https://steamcommunity.com/sharedfiles/filedetails/?id=1417396826).
