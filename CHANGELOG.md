@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Build map list dynamically
+- Add map list for multiplanetary systems with only one starting planet
 
 ## v1.0.3 - 2021-12-04
 

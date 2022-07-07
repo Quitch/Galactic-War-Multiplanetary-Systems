@@ -5,10 +5,12 @@ if (!gwmsMultiplanetarySystemsLoaded) {
 
   function gwmsMultiplanetarySystems() {
     try {
-      var maps = [];
+      var multiplanetaryMaps = [];
+      var multiStartMaps = [];
 
       // Create an empty tab to load in time for Shared Systems for Galactic War
-      cShareSystems.load_pas("GWMS Multiplanetary", maps);
+      cShareSystems.load_pas("GWMS Multiplanetary Systems", multiplanetaryMaps);
+      cShareSystems.load_pas("GWMS Multiplanetary Spawns", multiStartMaps);
 
       api.file.list("/ui/mods/", true).then(function (fileList) {
         var deferredQueue = [];
@@ -21,14 +23,20 @@ if (!gwmsMultiplanetarySystemsLoaded) {
           var deferred = $.Deferred();
           deferredQueue.push(deferred);
 
-          $.getJSON("coui:/" + filePath, function (mapFile) {
+          var coherentFilePath = "coui:/" + filePath;
+
+          $.getJSON(coherentFilePath, function (mapFile) {
             var startingPlanets = 0;
+            if (mapFile.planets.length > 1) {
+              multiplanetaryMaps.push(coherentFilePath);
+            }
+
             for (var planet of mapFile.planets) {
               if (planet.starting_planet === true) {
                 startingPlanets += 1;
               }
               if (startingPlanets > 1) {
-                maps.push("coui:/" + filePath);
+                multiStartMaps.push(coherentFilePath);
                 break;
               }
             }
@@ -38,7 +46,8 @@ if (!gwmsMultiplanetarySystemsLoaded) {
         });
 
         $.when.apply($, deferredQueue).then(function () {
-          cShareSystems.load_pas("GWMS Multiplanetary", maps);
+          cShareSystems.load_pas("GWMS Multiplanetary", multiplanetaryMaps);
+          cShareSystems.load_pas("GWMS Multiplanetary Starts", multiStartMaps);
         });
       });
     } catch (e) {
