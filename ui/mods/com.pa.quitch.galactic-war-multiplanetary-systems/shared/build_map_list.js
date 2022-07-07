@@ -8,7 +8,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
       var maps = [];
 
       // Create an empty tab to load in time for Shared Systems for Galactic War
-      cShareSystems.load_pas("GWMS New Multiplanetary", maps);
+      cShareSystems.load_pas("GWMS Multiplanetary", maps);
 
       api.file.list("/ui/mods/", true).then(function (fileList) {
         var deferredQueue = [];
@@ -38,7 +38,7 @@ if (!gwmsMultiplanetarySystemsLoaded) {
         });
 
         $.when.apply($, deferredQueue).then(function () {
-          cShareSystems.load_pas("GWMS New Multiplanetary", maps);
+          cShareSystems.load_pas("GWMS Multiplanetary", maps);
         });
       });
     } catch (e) {
