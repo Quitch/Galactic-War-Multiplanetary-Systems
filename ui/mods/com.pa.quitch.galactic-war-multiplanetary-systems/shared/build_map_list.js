@@ -7,10 +7,12 @@ if (!multiplanetarySystemsLoadedLoaded) {
     try {
       var multiplanetaryMaps = [];
       var multiStartMaps = [];
+      var mapTabOne = "Multiplanetary Systems";
+      var mapTabTwo = "Multiplanetary Spawns";
 
       // Create an empty tab to load in time for Shared Systems for Galactic War
-      cShareSystems.load_pas("Multiplanetary Systems", multiplanetaryMaps);
-      cShareSystems.load_pas("Multiplanetary Spawns", multiStartMaps);
+      cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
+      cShareSystems.load_pas(mapTabTwo, multiStartMaps);
 
       var checkForMultiplePlanets = function (
         numberOfPlanets,
@@ -56,8 +58,8 @@ if (!multiplanetarySystemsLoadedLoaded) {
         });
 
         $.when.apply($, deferredQueue).then(function () {
-          cShareSystems.load_pas("Multiplanetary Systems", multiplanetaryMaps);
-          cShareSystems.load_pas("Multiplanetary Spawns", multiStartMaps);
+          cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
+          cShareSystems.load_pas(mapTabTwo, multiStartMaps);
         });
       });
     } catch (e) {
