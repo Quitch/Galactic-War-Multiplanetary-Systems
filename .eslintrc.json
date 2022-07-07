@@ -7,19 +7,19 @@
   "env": {
     "browser": true,
     "jquery": true,
-    "amd": true
+    "amd": true,
+    "es6": true // PA uses Chrome 40 which supports a subset of ES6
   },
   "extends": ["eslint:recommended", "plugin:lodash/v3", "prettier"],
   "globals": {
     "cShareSystems": "readonly",
     "api": "readonly",
-    "_": "readonly",
-    "model": "readonly",
-    "ko": "readonly"
+    "_": "readonly"
   },
   "plugins": ["lodash"],
   "rules": {
     "lodash/prefer-lodash-method": 0,
-    "no-inner-declarations": 0
+    "no-inner-declarations": 0,
+    "curly": [2, "all"]
   }
 }
