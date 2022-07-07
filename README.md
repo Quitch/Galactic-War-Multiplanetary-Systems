@@ -2,7 +2,7 @@
 
 Collates multiplanetary systems with multiplanetary starts into a single map tab to allow players to easily add a wide array of multiplanetary systems to their war. [Shared Systems for Galactic War](https://forums.planetaryannihilation.com/threads/rel-shared-systems-for-galactic-war.71533/) is installed as a dependency to allow this to work.
 
-Maps are not included with this mod; they are loaded in maps from map packs you already have installed. This allows you to avoid the use of map packs you don't like and that the latest version of the map is used so long as the map pack author doesn't change the file path.
+Maps are not included with this mod; they are loaded in maps from map packs you already have installed.
 
 Any maps reliant on server mods have not been included as these will not work in Galactic War.
 
