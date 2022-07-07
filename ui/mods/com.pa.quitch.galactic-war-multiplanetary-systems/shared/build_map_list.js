@@ -12,6 +12,28 @@ if (!multiplanetarySystemsLoadedLoaded) {
       cShareSystems.load_pas("Multiplanetary Systems", multiplanetaryMaps);
       cShareSystems.load_pas("Multiplanetary Spawns", multiStartMaps);
 
+      var checkForMultiplePlanets = function (
+        numberOfPlanets,
+        coherentFilePath
+      ) {
+        if (numberOfPlanets > 1) {
+          multiplanetaryMaps.push(coherentFilePath);
+        }
+      };
+
+      var checkForMultiplanetarySpawns = function (planets, coherentFilePath) {
+        var startingPlanets = 0;
+        for (var planet of planets) {
+          if (planet.starting_planet === true) {
+            startingPlanets += 1;
+          }
+          if (startingPlanets > 1) {
+            multiStartMaps.push(coherentFilePath);
+            break;
+          }
+        }
+      };
+
       api.file.list("/ui/mods/", true).then(function (fileList) {
         var deferredQueue = [];
 
@@ -26,20 +48,8 @@ if (!multiplanetarySystemsLoadedLoaded) {
           var coherentFilePath = "coui:/" + filePath;
 
           $.getJSON(coherentFilePath, function (mapFile) {
-            var startingPlanets = 0;
-            if (mapFile.planets.length > 1) {
-              multiplanetaryMaps.push(coherentFilePath);
-            }
-
-            for (var planet of mapFile.planets) {
-              if (planet.starting_planet === true) {
-                startingPlanets += 1;
-              }
-              if (startingPlanets > 1) {
-                multiStartMaps.push(coherentFilePath);
-                break;
-              }
-            }
+            checkForMultiplePlanets(mapFile.planets.length, coherentFilePath);
+            checkForMultiplanetarySpawns(mapFile.planets, coherentFilePath);
           }).always(function () {
             deferred.resolve();
           });
