@@ -2,7 +2,7 @@
   "context": "client",
   "identifier": "com.pa.quitch.galactic-war-multiplanetary-systems-dev",
   "display_name": "Multiplanetary Systems DEV",
-  "description": "Collates multiplanetary systems with multiplanetary starts into the singular GWMS Multiplanetary tab for use with Shared Systems for Galactic War. Does not come with any maps, it uses maps from your currently installed and active map packs. See forum thread for details of supported map packs.",
+  "description": "Creates two new map tabs, one for all your multiplanetary systems, and one for your multiplanetary systems with multiple starting planets. Can be used in conjunction with Shared Systems for Galactic War, but only use one of the two tab. Does not come with any maps, it uses maps from your currently installed and active map packs.",
   "author": "Quitch",
   "version": "1.0.3",
   "build": "115958",
