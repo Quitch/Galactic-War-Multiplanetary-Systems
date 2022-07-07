@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v2.0.0
 
 - Build map list dynamically
 - Add map list for multiplanetary systems with only one starting planet
