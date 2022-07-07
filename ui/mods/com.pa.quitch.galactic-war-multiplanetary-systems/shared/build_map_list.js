@@ -3,7 +3,7 @@ var gwmsMultiplanetarySystemsLoaded;
 if (!gwmsMultiplanetarySystemsLoaded) {
   gwmsMultiplanetarySystemsLoaded = true;
 
-  function gwmsMultiplanetarySystems2() {
+  function gwmsMultiplanetarySystems() {
     try {
       var maps = [];
 
@@ -46,5 +46,5 @@ if (!gwmsMultiplanetarySystemsLoaded) {
       console.error(JSON.stringify(e));
     }
   }
-  gwmsMultiplanetarySystems2();
+  gwmsMultiplanetarySystems();
 }
