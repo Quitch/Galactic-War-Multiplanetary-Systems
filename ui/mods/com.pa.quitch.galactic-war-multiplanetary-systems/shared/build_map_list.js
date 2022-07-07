@@ -1,16 +1,16 @@
-var gwmsMultiplanetarySystemsLoaded;
+var multiplanetarySystemsLoadedLoaded;
 
-if (!gwmsMultiplanetarySystemsLoaded) {
-  gwmsMultiplanetarySystemsLoaded = true;
+if (!multiplanetarySystemsLoadedLoaded) {
+  multiplanetarySystemsLoadedLoaded = true;
 
-  function gwmsMultiplanetarySystems() {
+  function multiplanetarySystemsLoaded() {
     try {
       var multiplanetaryMaps = [];
       var multiStartMaps = [];
 
       // Create an empty tab to load in time for Shared Systems for Galactic War
-      cShareSystems.load_pas("GWMS Multiplanetary Systems", multiplanetaryMaps);
-      cShareSystems.load_pas("GWMS Multiplanetary Spawns", multiStartMaps);
+      cShareSystems.load_pas("Multiplanetary Systems", multiplanetaryMaps);
+      cShareSystems.load_pas("Multiplanetary Spawns", multiStartMaps);
 
       api.file.list("/ui/mods/", true).then(function (fileList) {
         var deferredQueue = [];
@@ -55,5 +55,5 @@ if (!gwmsMultiplanetarySystemsLoaded) {
       console.error(JSON.stringify(e));
     }
   }
-  gwmsMultiplanetarySystems();
+  multiplanetarySystemsLoaded();
 }
