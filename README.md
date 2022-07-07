@@ -1,4 +1,4 @@
-# Galactic War Multiplanetary Systems
+# Multiplanetary System Tabs
 
 Collates multiplanetary systems with multiplanetary starts into a single map tab to allow players to easily add a wide array of multiplanetary systems to their war. [Shared Systems for Galactic War](https://forums.planetaryannihilation.com/threads/rel-shared-systems-for-galactic-war.71533/) is installed as a dependency to allow this to work.
 
