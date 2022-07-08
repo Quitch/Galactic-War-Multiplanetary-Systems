@@ -80,51 +80,42 @@ if (!multiplanetarySystemTabsLoaded) {
 
       // Scan My Systems and PA for maps when populated and only
       // in the load_planet scene - this doesn't work in gw_start
-      if (!_.isUndefined(model.userSystems)) {
-        model.userSystems.subscribe(function (systems) {
-          processDefaultSystems(
-            systems,
-            defaultMultiplanetary,
-            defaultMultiStart
-          );
-        });
-      }
-      if (!_.isUndefined(model.premadeSystems)) {
-        model.premadeSystems.subscribe(function (systems) {
-          processDefaultSystems(
-            systems,
-            defaultMultiplanetary,
-            defaultMultiStart
-          );
-        });
-      }
+      model.userSystems.subscribe(function (systems) {
+        processDefaultSystems(
+          systems,
+          defaultMultiplanetary,
+          defaultMultiStart
+        );
+      });
+      model.premadeSystems.subscribe(function (systems) {
+        processDefaultSystems(
+          systems,
+          defaultMultiplanetary,
+          defaultMultiStart
+        );
+      });
 
       // Add My Systems and PA maps when tabs are ready and only
       // in the load_planet scene - this doesn't work in gw_start
       var addedDefaultMultiSystems = false;
       var addedDefaultMultiStarts = false;
-      if (!_.isUndefined(model.cShareSystems_tabsIndex)) {
-        model.cShareSystems_tabsIndex.subscribe(function (tabs) {
-          if (
-            addedDefaultMultiSystems === false ||
-            addedDefaultMultiStarts === false
-          ) {
-            _.forEach(tabs, function (tab) {
-              if (
-                tab.name === mapTabOne &&
-                addedDefaultMultiSystems === false
-              ) {
-                tab.systems(tab.systems().concat(defaultMultiplanetary));
-                addedDefaultMultiSystems = true;
-              }
-              if (tab.name === mapTabTwo && addedDefaultMultiStarts === false) {
-                tab.systems(tab.systems().concat(defaultMultiStart));
-                addedDefaultMultiStarts = true;
-              }
-            });
-          }
-        });
-      }
+      model.cShareSystems_tabsIndex.subscribe(function (tabs) {
+        if (
+          addedDefaultMultiSystems === false ||
+          addedDefaultMultiStarts === false
+        ) {
+          _.forEach(tabs, function (tab) {
+            if (tab.name === mapTabOne && addedDefaultMultiSystems === false) {
+              tab.systems(tab.systems().concat(defaultMultiplanetary));
+              addedDefaultMultiSystems = true;
+            }
+            if (tab.name === mapTabTwo && addedDefaultMultiStarts === false) {
+              tab.systems(tab.systems().concat(defaultMultiStart));
+              addedDefaultMultiStarts = true;
+            }
+          });
+        }
+      });
 
       api.file.list("/ui/mods/", true).then(function (fileList) {
         var deferredQueue = [];
