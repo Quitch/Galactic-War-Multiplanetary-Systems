@@ -101,10 +101,11 @@ if (!multiplanetarySystemTabsLoaded) {
           defaultMultiStart
         );
 
-        // Add My Systems and PA maps when tabs are ready
-        var addedDefaultMultiSystems = false;
-        var addedDefaultMultiStarts = false;
+        // Protect against failure in gw_start
         if (!_.isUndefined(model.cShareSystems_tabsIndex)) {
+          // Add My Systems and PA maps when tabs are ready
+          var addedDefaultMultiSystems = false;
+          var addedDefaultMultiStarts = false;
           model.cShareSystems_tabsIndex.subscribe(function (tabs) {
             if (
               addedDefaultMultiSystems === false ||
