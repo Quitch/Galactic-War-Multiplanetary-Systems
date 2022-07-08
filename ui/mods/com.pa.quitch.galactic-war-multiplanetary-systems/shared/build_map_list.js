@@ -16,73 +16,85 @@ if (!multiplanetarySystemTabsLoaded) {
 
       var checkForMultiplePlanets = function (
         numberOfPlanets,
-        coherentFilePath
+        filePathOrSystem
       ) {
         if (numberOfPlanets > 1) {
-          return coherentFilePath;
+          return filePathOrSystem;
         }
         return "";
       };
 
-      var checkForMultiplanetarySpawns = function (planets, coherentFilePath) {
+      var checkForMultiplanetarySpawns = function (planets, filePathOrSystem) {
         var startingPlanets = 0;
         for (var planet of planets) {
           if (planet.starting_planet === true) {
             startingPlanets += 1;
           }
           if (startingPlanets > 1) {
-            return coherentFilePath;
+            return filePathOrSystem;
           }
         }
         return "";
       };
 
-      var processMapPacks = function (planets, filePath) {
+      var processSystems = function (
+        planets,
+        multiPlanetMaps,
+        multiSpawnMaps,
+        filePathOrSystem
+      ) {
         var multiPlanetResult = checkForMultiplePlanets(
           planets.length,
-          filePath
+          filePathOrSystem
         );
-        var multiStartResult = checkForMultiplanetarySpawns(planets, filePath);
+        var multiStartResult = checkForMultiplanetarySpawns(
+          planets,
+          filePathOrSystem
+        );
 
         if (!_.isEmpty(multiPlanetResult)) {
-          multiplanetaryMaps.push(multiPlanetResult);
+          multiPlanetMaps.push(multiPlanetResult);
         }
         if (!_.isEmpty(multiStartResult)) {
-          multiStartMaps.push(multiStartResult);
+          multiSpawnMaps.push(multiStartResult);
         }
+      };
+
+      var processDefaultSystems = function (
+        systems,
+        multiPlanetMaps,
+        multiSpawnMaps
+      ) {
+        _.forEach(systems, function (system) {
+          processSystems(
+            system.planets,
+            multiPlanetMaps,
+            multiSpawnMaps,
+            system
+          );
+        });
       };
 
       var defaultMultiplanetary = [];
       var defaultMultiStart = [];
 
-      var prepareDefaultSystems = function (systems) {
-        _.forEach(systems, function (system) {
-          var multiPlanetResult = checkForMultiplePlanets(
-            system.planets.length,
-            system
-          );
-          var multiStartResult = checkForMultiplanetarySpawns(
-            system.planets,
-            system
-          );
-          if (_.isObject(multiPlanetResult)) {
-            defaultMultiplanetary.push(multiPlanetResult);
-          }
-          if (_.isObject(multiStartResult)) {
-            defaultMultiStart.push(multiStartResult);
-          }
-        });
-      };
-
       // Scan My Systems and PA for maps when populated
       if (!_.isUndefined(model.userSystems)) {
         model.userSystems.subscribe(function (systems) {
-          prepareDefaultSystems(systems);
+          processDefaultSystems(
+            systems,
+            defaultMultiplanetary,
+            defaultMultiStart
+          );
         });
       }
       if (!_.isUndefined(model.premadeSystems)) {
         model.premadeSystems.subscribe(function (systems) {
-          prepareDefaultSystems(systems);
+          processDefaultSystems(
+            systems,
+            defaultMultiplanetary,
+            defaultMultiStart
+          );
         });
       }
 
@@ -132,7 +144,12 @@ if (!multiplanetarySystemTabsLoaded) {
               return;
             }
 
-            processMapPacks(mapFile.planets, coherentFilePath);
+            processSystems(
+              mapFile.planets,
+              multiplanetaryMaps,
+              multiStartMaps,
+              coherentFilePath
+            );
           }).always(function () {
             deferred.resolve();
           });
