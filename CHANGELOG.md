@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Include premade and user systems in the multiplanetary map tabs
+
 ## v2.0.0 - 2022-07-07
 
 - Build map list dynamically
