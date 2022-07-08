@@ -127,11 +127,14 @@ if (!multiplanetarySystemTabsLoaded) {
 
         api.file.list("/ui/mods/", true).then(function (fileList) {
           var deferredQueue = [];
+          var noMapPacksInstalled = true;
 
           _.forEach(fileList, function (filePath) {
             if (!_.endsWith(filePath, ".pas")) {
               return;
             }
+
+            noMapPacksInstalled = false;
 
             var deferred = $.Deferred();
             deferredQueue.push(deferred);
@@ -155,6 +158,11 @@ if (!multiplanetarySystemTabsLoaded) {
               deferred.resolve();
             });
           });
+
+          if (noMapPacksInstalled === true) {
+            cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
+            cShareSystems.addTab(mapTabTwo, defaultMultiStart);
+          }
 
           $.when.apply($, deferredQueue).then(function () {
             cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
