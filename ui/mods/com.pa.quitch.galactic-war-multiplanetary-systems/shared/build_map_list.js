@@ -131,6 +131,7 @@ if (!multiplanetarySystemTabsLoaded) {
           });
         }
 
+        // Process pas files from all active map packs
         api.file.list("/ui/mods/", true).then(function (fileList) {
           var deferredQueue = [];
           var noMapPacksInstalled = true;
