@@ -77,10 +77,13 @@ if (!multiplanetarySystemTabsLoaded) {
 
       var defaultMultiplanetary = [];
       var defaultMultiStart = [];
+      var userSystems = ko
+        .observableArray([])
+        .extend({ db: { local_name: "systems", db_name: "misc" } });
 
       // Scan My Systems and PA for maps when populated and only
       // in the load_planet scene - this doesn't work in gw_start
-      model.userSystems.subscribe(function (systems) {
+      userSystems.subscribe(function (systems) {
         processDefaultSystems(
           systems,
           defaultMultiplanetary,
