@@ -21,7 +21,7 @@ if (!multiplanetarySystemTabsLoaded) {
         if (numberOfPlanets > 1) {
           return filePathOrSystem;
         }
-        return "";
+        return undefined;
       };
 
       var checkForMultiplanetarySpawns = function (planets, filePathOrSystem) {
@@ -34,7 +34,7 @@ if (!multiplanetarySystemTabsLoaded) {
             return filePathOrSystem;
           }
         }
-        return "";
+        return undefined;
       };
 
       var processSystems = function (
@@ -52,10 +52,10 @@ if (!multiplanetarySystemTabsLoaded) {
           filePathOrSystem
         );
 
-        if (!_.isEmpty(multiPlanetResult)) {
+        if (!_.isUndefined(multiPlanetResult)) {
           multiPlanetMaps.push(multiPlanetResult);
         }
-        if (!_.isEmpty(multiStartResult)) {
+        if (!_.isUndefined(multiStartResult)) {
           multiSpawnMaps.push(multiStartResult);
         }
       };
