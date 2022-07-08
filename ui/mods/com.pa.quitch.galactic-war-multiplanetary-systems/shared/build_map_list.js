@@ -164,15 +164,16 @@ if (!multiplanetarySystemTabsLoaded) {
             });
           });
 
-          if (noMapPacksInstalled === true) {
-            cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
-            cShareSystems.addTab(mapTabTwo, defaultMultiStart);
-          }
-
           $.when.apply($, deferredQueue).then(function () {
             cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
             cShareSystems.load_pas(mapTabTwo, multiStartMaps);
           });
+
+          // Fallback for using the mod without map packs
+          if (noMapPacksInstalled === true) {
+            cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
+            cShareSystems.addTab(mapTabTwo, defaultMultiStart);
+          }
         });
       });
     } catch (e) {
