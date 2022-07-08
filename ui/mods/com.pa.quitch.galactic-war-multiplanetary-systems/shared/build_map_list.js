@@ -140,8 +140,8 @@ if (!multiplanetarySystemTabsLoaded) {
           var coherentFilePath = "coui:/" + filePath;
 
           $.getJSON(coherentFilePath, function (mapFile) {
-            // This should never happen
             if (!mapFile.planets) {
+              // This should never happen
               console.warn("No planets found in " + coherentFilePath);
               return;
             }
