@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## v2.0.0
+## v2.1.0
+
+- Include premade and user systems in the multiplanetary map tabs - does not affect Galactic War
+
+## v2.0.0 - 2022-07-07
 
 - Build map list dynamically
 - Add map list for multiplanetary systems with only one starting planet
