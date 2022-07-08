@@ -83,26 +83,27 @@ if (!multiplanetarySystemTabsLoaded) {
 
         var defaultMultiplanetary = [];
         var defaultMultiStart = [];
-        var userSystems = ko
-          .observableArray([])
-          .extend({ db: { local_name: "systems", db_name: "misc" } });
-
-        // Scan My Systems and PA for maps
-        userSystems.subscribe(function (systems) {
-          processDefaultSystems(
-            systems,
-            defaultMultiplanetary,
-            defaultMultiStart
-          );
-        });
-        processDefaultSystems(
-          premadeSystems,
-          defaultMultiplanetary,
-          defaultMultiStart
-        );
 
         // Protect against failure in gw_start
         if (!_.isUndefined(model.cShareSystems_tabsIndex)) {
+          var userSystems = ko
+            .observableArray([])
+            .extend({ db: { local_name: "systems", db_name: "misc" } });
+
+          // Scan My Systems and PA for maps
+          userSystems.subscribe(function (systems) {
+            processDefaultSystems(
+              systems,
+              defaultMultiplanetary,
+              defaultMultiStart
+            );
+          });
+          processDefaultSystems(
+            premadeSystems,
+            defaultMultiplanetary,
+            defaultMultiStart
+          );
+
           // Add My Systems and PA maps when tabs are ready
           var addedDefaultMultiSystems = false;
           var addedDefaultMultiStarts = false;
