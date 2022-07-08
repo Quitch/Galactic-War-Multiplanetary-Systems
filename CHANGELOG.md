@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v2.1.0
+## v2.1.0 - 2022-07-08
 
 - Include premade and user systems in the multiplanetary map tabs - does not affect Galactic War
 
