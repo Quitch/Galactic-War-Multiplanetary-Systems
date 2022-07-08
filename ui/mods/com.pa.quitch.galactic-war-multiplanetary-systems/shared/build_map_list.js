@@ -35,10 +35,25 @@ if (!multiplanetarySystemTabsLoaded) {
         }
       };
 
+      var processMapPacks = function (planets, filePath) {
+        var multiPlanetResult = checkForMultiplePlanets(
+          planets.length,
+          filePath
+        );
+        var multiStartResult = checkForMultiplanetarySpawns(planets, filePath);
+
+        if (_.isString(multiPlanetResult)) {
+          multiplanetaryMaps.push(multiPlanetResult);
+        }
+        if (_.isString(multiStartResult)) {
+          multiStartMaps.push(multiStartResult);
+        }
+      };
+
       var defaultMultiplanetary = [];
       var defaultMultiStart = [];
 
-      var processDefaultSystems = function (systems) {
+      var prepareDefaultSystems = function (systems) {
         _.forEach(systems, function (system) {
           var multiPlanetResult = checkForMultiplePlanets(
             system.planets.length,
@@ -59,10 +74,10 @@ if (!multiplanetarySystemTabsLoaded) {
 
       // Scan My Systems and PA for maps when populated
       model.userSystems.subscribe(function (systems) {
-        processDefaultSystems(systems);
+        prepareDefaultSystems(systems);
       });
       model.premadeSystems.subscribe(function (systems) {
-        processDefaultSystems(systems);
+        prepareDefaultSystems(systems);
       });
 
       // Add My Systems and PA maps when tabs are ready
@@ -106,8 +121,7 @@ if (!multiplanetarySystemTabsLoaded) {
               return;
             }
 
-            checkForMultiplePlanets(mapFile.planets.length, coherentFilePath);
-            checkForMultiplanetarySpawns(mapFile.planets, coherentFilePath);
+            processMapPacks(mapFile.planets, coherentFilePath);
           }).always(function () {
             deferred.resolve();
           });
