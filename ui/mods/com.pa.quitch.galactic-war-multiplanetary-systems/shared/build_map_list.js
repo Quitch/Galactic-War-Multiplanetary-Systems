@@ -78,7 +78,8 @@ if (!multiplanetarySystemTabsLoaded) {
       var defaultMultiplanetary = [];
       var defaultMultiStart = [];
 
-      // Scan My Systems and PA for maps when populated
+      // Scan My Systems and PA for maps when populated and only
+      // in the load_planet scene - this doesn't work in gw_start
       if (!_.isUndefined(model.userSystems)) {
         model.userSystems.subscribe(function (systems) {
           processDefaultSystems(
@@ -98,7 +99,8 @@ if (!multiplanetarySystemTabsLoaded) {
         });
       }
 
-      // Add My Systems and PA maps when tabs are ready
+      // Add My Systems and PA maps when tabs are ready and only
+      // in the load_planet scene - this doesn't work in gw_start
       var addedDefaultMultiSystems = false;
       var addedDefaultMultiStarts = false;
       if (!_.isUndefined(model.cShareSystems_tabsIndex)) {
