@@ -14,146 +14,152 @@ if (!multiplanetarySystemTabsLoaded) {
       cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
       cShareSystems.load_pas(mapTabTwo, multiStartMaps);
 
-      var checkForMultiplePlanets = function (
-        numberOfPlanets,
-        filePathOrSystem
+      require(["/main/shared/js/premade_systems.js"], function (
+        premadeSystems
       ) {
-        if (numberOfPlanets > 1) {
-          return filePathOrSystem;
-        }
-        return undefined;
-      };
-
-      var checkForMultiplanetarySpawns = function (planets, filePathOrSystem) {
-        var startingPlanets = 0;
-        for (var planet of planets) {
-          if (planet.starting_planet === true) {
-            startingPlanets += 1;
-          }
-          if (startingPlanets > 1) {
+        var checkForMultiplePlanets = function (
+          numberOfPlanets,
+          filePathOrSystem
+        ) {
+          if (numberOfPlanets > 1) {
             return filePathOrSystem;
           }
-        }
-        return undefined;
-      };
+          return undefined;
+        };
 
-      var processSystems = function (
-        planets,
-        multiPlanetMaps,
-        multiSpawnMaps,
-        filePathOrSystem
-      ) {
-        var multiPlanetResult = checkForMultiplePlanets(
-          planets.length,
-          filePathOrSystem
-        );
-        var multiStartResult = checkForMultiplanetarySpawns(
+        var checkForMultiplanetarySpawns = function (
           planets,
           filePathOrSystem
-        );
+        ) {
+          var startingPlanets = 0;
+          for (var planet of planets) {
+            if (planet.starting_planet === true) {
+              startingPlanets += 1;
+            }
+            if (startingPlanets > 1) {
+              return filePathOrSystem;
+            }
+          }
+          return undefined;
+        };
 
-        if (!_.isUndefined(multiPlanetResult)) {
-          multiPlanetMaps.push(multiPlanetResult);
-        }
-        if (!_.isUndefined(multiStartResult)) {
-          multiSpawnMaps.push(multiStartResult);
-        }
-      };
+        var processSystems = function (
+          planets,
+          multiPlanetMaps,
+          multiSpawnMaps,
+          filePathOrSystem
+        ) {
+          var multiPlanetResult = checkForMultiplePlanets(
+            planets.length,
+            filePathOrSystem
+          );
+          var multiStartResult = checkForMultiplanetarySpawns(
+            planets,
+            filePathOrSystem
+          );
 
-      var processDefaultSystems = function (
-        systems,
-        multiPlanetMaps,
-        multiSpawnMaps
-      ) {
-        _.forEach(systems, function (system) {
-          processSystems(
-            system.planets,
-            multiPlanetMaps,
-            multiSpawnMaps,
-            system
+          if (!_.isUndefined(multiPlanetResult)) {
+            multiPlanetMaps.push(multiPlanetResult);
+          }
+          if (!_.isUndefined(multiStartResult)) {
+            multiSpawnMaps.push(multiStartResult);
+          }
+        };
+
+        var processDefaultSystems = function (
+          systems,
+          multiPlanetMaps,
+          multiSpawnMaps
+        ) {
+          _.forEach(systems, function (system) {
+            processSystems(
+              system.planets,
+              multiPlanetMaps,
+              multiSpawnMaps,
+              system
+            );
+          });
+        };
+
+        var defaultMultiplanetary = [];
+        var defaultMultiStart = [];
+        var userSystems = ko
+          .observableArray([])
+          .extend({ db: { local_name: "systems", db_name: "misc" } });
+
+        // Scan My Systems and PA for maps
+        userSystems.subscribe(function (systems) {
+          processDefaultSystems(
+            systems,
+            defaultMultiplanetary,
+            defaultMultiStart
           );
         });
-      };
-
-      var defaultMultiplanetary = [];
-      var defaultMultiStart = [];
-      var userSystems = ko
-        .observableArray([])
-        .extend({ db: { local_name: "systems", db_name: "misc" } });
-
-      // Scan My Systems and PA for maps when populated and only
-      // in the load_planet scene - this doesn't work in gw_start
-      userSystems.subscribe(function (systems) {
         processDefaultSystems(
-          systems,
+          premadeSystems,
           defaultMultiplanetary,
           defaultMultiStart
         );
-      });
-      model.premadeSystems.subscribe(function (systems) {
-        processDefaultSystems(
-          systems,
-          defaultMultiplanetary,
-          defaultMultiStart
-        );
-      });
 
-      // Add My Systems and PA maps when tabs are ready and only
-      // in the load_planet scene - this doesn't work in gw_start
-      var addedDefaultMultiSystems = false;
-      var addedDefaultMultiStarts = false;
-      model.cShareSystems_tabsIndex.subscribe(function (tabs) {
-        if (
-          addedDefaultMultiSystems === false ||
-          addedDefaultMultiStarts === false
-        ) {
-          _.forEach(tabs, function (tab) {
-            if (tab.name === mapTabOne && addedDefaultMultiSystems === false) {
-              tab.systems(tab.systems().concat(defaultMultiplanetary));
-              addedDefaultMultiSystems = true;
-            }
-            if (tab.name === mapTabTwo && addedDefaultMultiStarts === false) {
-              tab.systems(tab.systems().concat(defaultMultiStart));
-              addedDefaultMultiStarts = true;
-            }
-          });
-        }
-      });
-
-      api.file.list("/ui/mods/", true).then(function (fileList) {
-        var deferredQueue = [];
-
-        _.forEach(fileList, function (filePath) {
-          if (!_.endsWith(filePath, ".pas")) {
-            return;
+        // Add My Systems and PA maps when tabs are ready
+        var addedDefaultMultiSystems = false;
+        var addedDefaultMultiStarts = false;
+        model.cShareSystems_tabsIndex.subscribe(function (tabs) {
+          if (
+            addedDefaultMultiSystems === false ||
+            addedDefaultMultiStarts === false
+          ) {
+            _.forEach(tabs, function (tab) {
+              if (
+                tab.name === mapTabOne &&
+                addedDefaultMultiSystems === false
+              ) {
+                tab.systems(tab.systems().concat(defaultMultiplanetary));
+                addedDefaultMultiSystems = true;
+              }
+              if (tab.name === mapTabTwo && addedDefaultMultiStarts === false) {
+                tab.systems(tab.systems().concat(defaultMultiStart));
+                addedDefaultMultiStarts = true;
+              }
+            });
           }
+        });
 
-          var deferred = $.Deferred();
-          deferredQueue.push(deferred);
+        api.file.list("/ui/mods/", true).then(function (fileList) {
+          var deferredQueue = [];
 
-          var coherentFilePath = "coui:/" + filePath;
-
-          $.getJSON(coherentFilePath, function (mapFile) {
-            if (!mapFile.planets) {
-              // This should never happen
-              console.warn("No planets found in " + coherentFilePath);
+          _.forEach(fileList, function (filePath) {
+            if (!_.endsWith(filePath, ".pas")) {
               return;
             }
 
-            processSystems(
-              mapFile.planets,
-              multiplanetaryMaps,
-              multiStartMaps,
-              coherentFilePath
-            );
-          }).always(function () {
-            deferred.resolve();
-          });
-        });
+            var deferred = $.Deferred();
+            deferredQueue.push(deferred);
 
-        $.when.apply($, deferredQueue).then(function () {
-          cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
-          cShareSystems.load_pas(mapTabTwo, multiStartMaps);
+            var coherentFilePath = "coui:/" + filePath;
+
+            $.getJSON(coherentFilePath, function (mapFile) {
+              if (!mapFile.planets) {
+                // This should never happen
+                console.warn("No planets found in " + coherentFilePath);
+                return;
+              }
+
+              processSystems(
+                mapFile.planets,
+                multiplanetaryMaps,
+                multiStartMaps,
+                coherentFilePath
+              );
+            }).always(function () {
+              deferred.resolve();
+            });
+          });
+
+          $.when.apply($, deferredQueue).then(function () {
+            cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
+            cShareSystems.load_pas(mapTabTwo, multiStartMaps);
+          });
         });
       });
     } catch (e) {
