@@ -104,26 +104,31 @@ if (!multiplanetarySystemTabsLoaded) {
         // Add My Systems and PA maps when tabs are ready
         var addedDefaultMultiSystems = false;
         var addedDefaultMultiStarts = false;
-        model.cShareSystems_tabsIndex.subscribe(function (tabs) {
-          if (
-            addedDefaultMultiSystems === false ||
-            addedDefaultMultiStarts === false
-          ) {
-            _.forEach(tabs, function (tab) {
-              if (
-                tab.name === mapTabOne &&
-                addedDefaultMultiSystems === false
-              ) {
-                tab.systems(tab.systems().concat(defaultMultiplanetary));
-                addedDefaultMultiSystems = true;
-              }
-              if (tab.name === mapTabTwo && addedDefaultMultiStarts === false) {
-                tab.systems(tab.systems().concat(defaultMultiStart));
-                addedDefaultMultiStarts = true;
-              }
-            });
-          }
-        });
+        if (!_.isUndefined(model.cShareSystems_tabsIndex)) {
+          model.cShareSystems_tabsIndex.subscribe(function (tabs) {
+            if (
+              addedDefaultMultiSystems === false ||
+              addedDefaultMultiStarts === false
+            ) {
+              _.forEach(tabs, function (tab) {
+                if (
+                  tab.name === mapTabOne &&
+                  addedDefaultMultiSystems === false
+                ) {
+                  tab.systems(tab.systems().concat(defaultMultiplanetary));
+                  addedDefaultMultiSystems = true;
+                }
+                if (
+                  tab.name === mapTabTwo &&
+                  addedDefaultMultiStarts === false
+                ) {
+                  tab.systems(tab.systems().concat(defaultMultiStart));
+                  addedDefaultMultiStarts = true;
+                }
+              });
+            }
+          });
+        }
 
         api.file.list("/ui/mods/", true).then(function (fileList) {
           var deferredQueue = [];
