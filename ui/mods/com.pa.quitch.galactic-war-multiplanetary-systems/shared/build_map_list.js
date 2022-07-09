@@ -28,7 +28,7 @@ if (!multiplanetarySystemTabsLoaded) {
         var startingPlanets = 0;
         for (var planet of planets) {
           if (planet.starting_planet === true) {
-            startingPlanets += 1;
+            startingPlanets++;
           }
           if (startingPlanets > 1) {
             return filePathOrSystem;
