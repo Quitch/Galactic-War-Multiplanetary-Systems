@@ -14,73 +14,70 @@ if (!multiplanetarySystemTabsLoaded) {
       cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
       cShareSystems.load_pas(mapTabTwo, multiStartMaps);
 
+      var checkForMultiplePlanets = function (
+        numberOfPlanets,
+        filePathOrSystem
+      ) {
+        if (numberOfPlanets > 1) {
+          return filePathOrSystem;
+        }
+        return undefined;
+      };
+
+      var checkForMultiplanetarySpawns = function (planets, filePathOrSystem) {
+        var startingPlanets = 0;
+        for (var planet of planets) {
+          if (planet.starting_planet === true) {
+            startingPlanets += 1;
+          }
+          if (startingPlanets > 1) {
+            return filePathOrSystem;
+          }
+        }
+        return undefined;
+      };
+
+      var processSystems = function (
+        planets,
+        multiPlanetMaps,
+        multiSpawnMaps,
+        filePathOrSystem
+      ) {
+        var multiPlanetResult = checkForMultiplePlanets(
+          planets.length,
+          filePathOrSystem
+        );
+        var multiStartResult = checkForMultiplanetarySpawns(
+          planets,
+          filePathOrSystem
+        );
+
+        if (!_.isUndefined(multiPlanetResult)) {
+          multiPlanetMaps.push(multiPlanetResult);
+        }
+        if (!_.isUndefined(multiStartResult)) {
+          multiSpawnMaps.push(multiStartResult);
+        }
+      };
+
+      var processDefaultSystems = function (
+        systems,
+        multiPlanetMaps,
+        multiSpawnMaps
+      ) {
+        _.forEach(systems, function (system) {
+          processSystems(
+            system.planets,
+            multiPlanetMaps,
+            multiSpawnMaps,
+            system
+          );
+        });
+      };
+
       require(["/main/shared/js/premade_systems.js"], function (
         premadeSystems
       ) {
-        var checkForMultiplePlanets = function (
-          numberOfPlanets,
-          filePathOrSystem
-        ) {
-          if (numberOfPlanets > 1) {
-            return filePathOrSystem;
-          }
-          return undefined;
-        };
-
-        var checkForMultiplanetarySpawns = function (
-          planets,
-          filePathOrSystem
-        ) {
-          var startingPlanets = 0;
-          for (var planet of planets) {
-            if (planet.starting_planet === true) {
-              startingPlanets += 1;
-            }
-            if (startingPlanets > 1) {
-              return filePathOrSystem;
-            }
-          }
-          return undefined;
-        };
-
-        var processSystems = function (
-          planets,
-          multiPlanetMaps,
-          multiSpawnMaps,
-          filePathOrSystem
-        ) {
-          var multiPlanetResult = checkForMultiplePlanets(
-            planets.length,
-            filePathOrSystem
-          );
-          var multiStartResult = checkForMultiplanetarySpawns(
-            planets,
-            filePathOrSystem
-          );
-
-          if (!_.isUndefined(multiPlanetResult)) {
-            multiPlanetMaps.push(multiPlanetResult);
-          }
-          if (!_.isUndefined(multiStartResult)) {
-            multiSpawnMaps.push(multiStartResult);
-          }
-        };
-
-        var processDefaultSystems = function (
-          systems,
-          multiPlanetMaps,
-          multiSpawnMaps
-        ) {
-          _.forEach(systems, function (system) {
-            processSystems(
-              system.planets,
-              multiPlanetMaps,
-              multiSpawnMaps,
-              system
-            );
-          });
-        };
-
         var defaultMultiplanetary = [];
         var defaultMultiStart = [];
 
