@@ -116,8 +116,7 @@ if (!multiplanetarySystemTabsLoaded) {
                 ) {
                   tab.systems(tab.systems().concat(defaultMultiplanetary));
                   addedDefaultMultiSystems = true;
-                }
-                if (
+                } else if (
                   tab.name === mapTabTwo &&
                   addedDefaultMultiStarts === false
                 ) {
