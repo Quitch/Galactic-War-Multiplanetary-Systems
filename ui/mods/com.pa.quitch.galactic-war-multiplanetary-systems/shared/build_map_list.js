@@ -7,8 +7,8 @@ if (!multiplanetarySystemTabsLoaded) {
     try {
       var multiplanetaryMaps = [];
       var multiStartMaps = [];
-      var mapTabOne = "Multiplanetary Systems";
-      var mapTabTwo = "Multiplanetary Spawns";
+      var mapTabOne = loc("!LOC:Multiplanetary Systems");
+      var mapTabTwo = loc("!LOC:Multiplanetary Spawns");
 
       // Create an empty tab to load in time for Shared Systems for Galactic War
       cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
