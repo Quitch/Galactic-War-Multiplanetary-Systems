@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Added System Sharing for Titans & Classic as a mod dependency
+
 ## v2.1.0 - 2022-07-08
 
 - Include premade and user systems in the multiplanetary map tabs - does not affect Galactic War
