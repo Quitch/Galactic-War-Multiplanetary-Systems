@@ -1,8 +1,8 @@
 {
   "context": "client",
   "identifier": "com.pa.quitch.galactic-war-multiplanetary-systems-dev",
-  "display_name": "Multiplanetary System Tabs DEV",
-  "description": "Creates two new map tabs, one for all your multiplanetary systems, and one for your multiplanetary systems with multiple starting planets. Can be used in conjunction with Shared Systems for Galactic War, but only use one of the two tabs. Does not come with any maps, it uses maps from your currently installed and active map packs.",
+  "display_name": "Single & Multiplanetary System Tabs DEV",
+  "description": "Creates three new map tabs, one for single planet systems, one for all your multiplanetary systems, and one for your multiplanetary systems with multiple starting planets. Can be used in conjunction with Shared Systems for Galactic War. Does not come with any maps, it uses maps from your currently installed and active map packs.",
   "author": "Quitch",
   "version": "2.1.0",
   "build": "115872",
