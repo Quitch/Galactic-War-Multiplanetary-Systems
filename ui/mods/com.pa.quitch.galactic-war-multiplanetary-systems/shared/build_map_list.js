@@ -12,10 +12,11 @@ if (!multiplanetarySystemTabsLoaded) {
       var mapTabTwo = loc("!LOC:Multiplanetary Spawns");
       var mapTabThree = loc("!LOC:Single Planet Systems");
 
-      // Create an empty tab to load in time for Shared Systems for Galactic War
-      cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
-      cShareSystems.load_pas(mapTabTwo, multiStartMaps);
-      cShareSystems.load_pas(mapTabThree, singlePlanetMaps);
+      var loadTabs = function (mapsOne, mapsTwo, mapsThree) {
+        cShareSystems.load_pas(mapTabOne, mapsOne);
+        cShareSystems.load_pas(mapTabTwo, mapsTwo);
+        cShareSystems.load_pas(mapTabThree, mapsThree);
+      };
 
       var checkForMultiplePlanets = function (numberOfPlanets) {
         return numberOfPlanets > 1;
@@ -88,6 +89,9 @@ if (!multiplanetarySystemTabsLoaded) {
           model.systemSources.valueHasMutated();
         }
       };
+
+      // Create an empty tab to load in time for Shared Systems for Galactic War
+      loadTabs(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
 
       require(["/main/shared/js/premade_systems.js"], function (
         premadeSystems
@@ -190,9 +194,7 @@ if (!multiplanetarySystemTabsLoaded) {
           });
 
           $.when.apply($, deferredQueue).then(function () {
-            cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
-            cShareSystems.load_pas(mapTabTwo, multiStartMaps);
-            cShareSystems.load_pas(mapTabThree, singlePlanetMaps);
+            loadTabs(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
             reloadSystems();
           });
 
