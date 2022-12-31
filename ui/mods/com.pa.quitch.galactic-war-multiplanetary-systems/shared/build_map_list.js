@@ -153,14 +153,14 @@ if (!multiplanetarySystemTabsLoaded) {
         // Process pas files from all active map packs
         api.file.list("/ui/mods/", true).then(function (fileList) {
           var deferredQueue = [];
-          var noMapPacksInstalled = true;
+          var mapPacksInstalled = false;
 
           _.forEach(fileList, function (filePath) {
             if (!_.endsWith(filePath, ".pas")) {
               return;
             }
 
-            noMapPacksInstalled = false;
+            mapPacksInstalled = true;
 
             var deferred = $.Deferred();
             deferredQueue.push(deferred);
@@ -187,19 +187,19 @@ if (!multiplanetarySystemTabsLoaded) {
           });
 
           $.when.apply($, deferredQueue).then(function () {
-            loadTabs(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
-            // Update Shared Systems for Galactic War's systems count
-            if (model.systemSources) {
-              model.systemSources.valueHasMutated();
+            if (mapPacksInstalled === true) {
+              loadTabs(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+              // Update Shared Systems for Galactic War's systems count
+              if (model.systemSources) {
+                model.systemSources.valueHasMutated();
+              }
+            } else {
+              // Fallback for using the mod without map packs outside of Galactic War
+              cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
+              cShareSystems.addTab(mapTabTwo, defaultMultiStart);
+              cShareSystems.addTab(mapTabThree, singlePlanetMaps);
             }
           });
-
-          // Fallback for using the mod without map packs outside of Galactic War
-          if (noMapPacksInstalled === true) {
-            cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
-            cShareSystems.addTab(mapTabTwo, defaultMultiStart);
-            cShareSystems.addTab(mapTabThree, singlePlanetMaps);
-          }
         });
       });
     } catch (e) {
