@@ -195,14 +195,12 @@ if (!multiplanetarySystemTabsLoaded) {
 
           $.when.apply($, deferredQueue).then(function () {
             if (mapPacksInstalled === true) {
-              console.log("Map packs");
               tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
               // Update Shared Systems for Galactic War's systems count
               if (model.systemSources) {
                 model.systemSources.valueHasMutated();
               }
             } else {
-              console.log("No map packs");
               tabOps.add(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
             }
           });
