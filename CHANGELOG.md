@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v2.2.0 - 2022-12-31
 
 - Added System Sharing for Titans & Classic as a mod dependency
 - Added a Single Planet Systems tab
