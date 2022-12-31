@@ -16,7 +16,8 @@
     "api": "readonly",
     "_": "readonly",
     "model": "readonly",
-    "ko": "readonly"
+    "ko": "readonly",
+    "loc": "readonly"
   },
   "plugins": ["lodash"],
   "rules": {

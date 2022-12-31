@@ -1,6 +1,12 @@
 # CHANGELOG
 
-## v2.1.0
+## v2.2.0 - 2022-12-31
+
+- Added System Sharing for Titans & Classic as a mod dependency
+- Added a Single Planet Systems tab
+- Fix Shared Systems for Galactic War not counting systems in this mod's tabs until the Systems selection was changed
+
+## v2.1.0 - 2022-07-08
 
 - Include premade and user systems in the multiplanetary map tabs - does not affect Galactic War
 
