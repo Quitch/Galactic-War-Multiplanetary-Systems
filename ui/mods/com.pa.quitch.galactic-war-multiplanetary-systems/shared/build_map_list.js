@@ -12,10 +12,17 @@ if (!multiplanetarySystemTabsLoaded) {
       var mapTabTwo = loc("!LOC:Multiplanetary Spawns");
       var mapTabThree = loc("!LOC:Single Planet Systems");
 
-      var loadTabs = function (mapsOne, mapsTwo, mapsThree) {
-        cShareSystems.load_pas(mapTabOne, mapsOne);
-        cShareSystems.load_pas(mapTabTwo, mapsTwo);
-        cShareSystems.load_pas(mapTabThree, mapsThree);
+      var tabOps = {
+        load: function (mapsOne, mapsTwo, mapsThree) {
+          cShareSystems.load_pas(mapTabOne, mapsOne);
+          cShareSystems.load_pas(mapTabTwo, mapsTwo);
+          cShareSystems.load_pas(mapTabThree, mapsThree);
+        },
+        add: function (mapsOne, mapsTwo, mapsThree) {
+          cShareSystems.addTab(mapTabOne, mapsOne);
+          cShareSystems.addTab(mapTabTwo, mapsTwo);
+          cShareSystems.addTab(mapTabThree, mapsThree);
+        },
       };
 
       var checkForMultiplePlanets = function (numberOfPlanets) {
@@ -84,13 +91,13 @@ if (!multiplanetarySystemTabsLoaded) {
       };
 
       // Create an empty tab to load in time for Shared Systems for Galactic War
-      loadTabs(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+      tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
 
       require(["/main/shared/js/premade_systems.js"], function (
         premadeSystems
       ) {
-        var defaultMultiplanetary = [];
-        var defaultMultiStart = [];
+        var multiplanetaryMaps = [];
+        var multiStartMaps = [];
         var defaultSingleSystem = [];
 
         // Protect against failure in gw_start
@@ -103,26 +110,26 @@ if (!multiplanetarySystemTabsLoaded) {
           userSystems.subscribe(function (systems) {
             processDefaultSystems(
               systems,
-              defaultMultiplanetary,
-              defaultMultiStart,
+              multiplanetaryMaps,
+              multiStartMaps,
               defaultSingleSystem
             );
           });
           processDefaultSystems(
             premadeSystems,
-            defaultMultiplanetary,
-            defaultMultiStart,
+            multiplanetaryMaps,
+            multiStartMaps,
             defaultSingleSystem
           );
 
           // Add My Systems and PA maps when tabs are ready
           var addedDefaultMultiSystems = false;
-          var addedDefaultMultiStarts = false;
+          var addedmultiStartMapss = false;
           var addedDefaultSingleSystem = false;
           model.cShareSystems_tabsIndex.subscribe(function (tabs) {
             if (
               addedDefaultMultiSystems === false ||
-              addedDefaultMultiStarts === false ||
+              addedmultiStartMapss === false ||
               addedDefaultSingleSystem === false
             ) {
               _.forEach(tabs, function (tab) {
@@ -130,14 +137,14 @@ if (!multiplanetarySystemTabsLoaded) {
                   tab.name === mapTabOne &&
                   addedDefaultMultiSystems === false
                 ) {
-                  tab.systems(tab.systems().concat(defaultMultiplanetary));
+                  tab.systems(tab.systems().concat(multiplanetaryMaps));
                   addedDefaultMultiSystems = true;
                 } else if (
                   tab.name === mapTabTwo &&
-                  addedDefaultMultiStarts === false
+                  addedmultiStartMapss === false
                 ) {
-                  tab.systems(tab.systems().concat(defaultMultiStart));
-                  addedDefaultMultiStarts = true;
+                  tab.systems(tab.systems().concat(multiStartMaps));
+                  addedmultiStartMapss = true;
                 } else if (
                   tab.name === mapTabThree &&
                   addedDefaultSingleSystem === false
@@ -188,15 +195,13 @@ if (!multiplanetarySystemTabsLoaded) {
 
           $.when.apply($, deferredQueue).then(function () {
             if (mapPacksInstalled === true) {
-              loadTabs(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+              tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
               // Update Shared Systems for Galactic War's systems count
               if (model.systemSources) {
                 model.systemSources.valueHasMutated();
               }
             } else {
-              cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
-              cShareSystems.addTab(mapTabTwo, defaultMultiStart);
-              cShareSystems.addTab(mapTabThree, singlePlanetMaps);
+              tabOps.add(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
             }
           });
         });
