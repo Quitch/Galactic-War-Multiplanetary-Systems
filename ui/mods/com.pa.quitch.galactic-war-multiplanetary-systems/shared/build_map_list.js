@@ -198,12 +198,11 @@ if (!multiplanetarySystemTabsLoaded) {
             reloadSystems();
           });
 
-          // Fallback for using the mod without map packs
+          // Fallback for using the mod without map packs outside of Galactic War
           if (noMapPacksInstalled === true) {
             cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
             cShareSystems.addTab(mapTabTwo, defaultMultiStart);
             cShareSystems.addTab(mapTabThree, singlePlanetMaps);
-            reloadSystems();
           }
         });
       });
