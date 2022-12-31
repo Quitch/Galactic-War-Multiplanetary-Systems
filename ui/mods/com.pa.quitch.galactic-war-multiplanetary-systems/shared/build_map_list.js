@@ -96,8 +96,8 @@ if (!multiplanetarySystemTabsLoaded) {
       require(["/main/shared/js/premade_systems.js"], function (
         premadeSystems
       ) {
-        var multiplanetaryMaps = [];
-        var multiStartMaps = [];
+        var defaultMultiplanetary = [];
+        var defaultMultiStart = [];
         var defaultSingleSystem = [];
 
         var userSystems = ko
@@ -108,15 +108,15 @@ if (!multiplanetarySystemTabsLoaded) {
         userSystems.subscribe(function (systems) {
           processDefaultSystems(
             systems,
-            multiplanetaryMaps,
-            multiStartMaps,
+            defaultMultiplanetary,
+            defaultMultiStart,
             defaultSingleSystem
           );
         });
         processDefaultSystems(
           premadeSystems,
-          multiplanetaryMaps,
-          multiStartMaps,
+          defaultMultiplanetary,
+          defaultMultiStart,
           defaultSingleSystem
         );
 
@@ -124,12 +124,12 @@ if (!multiplanetarySystemTabsLoaded) {
         if (!_.isUndefined(model.cShareSystems_tabsIndex)) {
           // Add My Systems and PA maps when tabs are ready
           var addedDefaultMultiSystems = false;
-          var addedMultiStartMaps = false;
+          var addedDefaultMultiStart = false;
           var addedDefaultSingleSystem = false;
           model.cShareSystems_tabsIndex.subscribe(function (tabs) {
             if (
               addedDefaultMultiSystems === false ||
-              addedMultiStartMaps === false ||
+              addedDefaultMultiStart === false ||
               addedDefaultSingleSystem === false
             ) {
               _.forEach(tabs, function (tab) {
@@ -137,14 +137,14 @@ if (!multiplanetarySystemTabsLoaded) {
                   tab.name === mapTabOne &&
                   addedDefaultMultiSystems === false
                 ) {
-                  tab.systems(tab.systems().concat(multiplanetaryMaps));
+                  tab.systems(tab.systems().concat(defaultMultiplanetary));
                   addedDefaultMultiSystems = true;
                 } else if (
                   tab.name === mapTabTwo &&
-                  addedMultiStartMaps === false
+                  addedDefaultMultiStart === false
                 ) {
-                  tab.systems(tab.systems().concat(multiStartMaps));
-                  addedMultiStartMaps = true;
+                  tab.systems(tab.systems().concat(defaultMultiStart));
+                  addedDefaultMultiStart = true;
                 } else if (
                   tab.name === mapTabThree &&
                   addedDefaultSingleSystem === false
