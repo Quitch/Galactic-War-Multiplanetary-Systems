@@ -82,6 +82,13 @@ if (!multiplanetarySystemTabsLoaded) {
         });
       };
 
+      // Update Shared Systems for Galactic War's systems count
+      var reloadSystems = function () {
+        if (model.systemSources) {
+          model.systemSources.valueHasMutated();
+        }
+      };
+
       require(["/main/shared/js/premade_systems.js"], function (
         premadeSystems
       ) {
@@ -186,6 +193,7 @@ if (!multiplanetarySystemTabsLoaded) {
             cShareSystems.load_pas(mapTabOne, multiplanetaryMaps);
             cShareSystems.load_pas(mapTabTwo, multiStartMaps);
             cShareSystems.load_pas(mapTabThree, singlePlanetMaps);
+            reloadSystems();
           });
 
           // Fallback for using the mod without map packs
@@ -193,6 +201,7 @@ if (!multiplanetarySystemTabsLoaded) {
             cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
             cShareSystems.addTab(mapTabTwo, defaultMultiStart);
             cShareSystems.addTab(mapTabThree, singlePlanetMaps);
+            reloadSystems();
           }
         });
       });
