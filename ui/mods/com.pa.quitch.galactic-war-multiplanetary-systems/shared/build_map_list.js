@@ -194,7 +194,6 @@ if (!multiplanetarySystemTabsLoaded) {
                 model.systemSources.valueHasMutated();
               }
             } else {
-              // Fallback for using the mod without map packs outside of Galactic War
               cShareSystems.addTab(mapTabOne, defaultMultiplanetary);
               cShareSystems.addTab(mapTabTwo, defaultMultiStart);
               cShareSystems.addTab(mapTabThree, singlePlanetMaps);
