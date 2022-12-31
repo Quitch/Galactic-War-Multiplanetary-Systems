@@ -83,13 +83,6 @@ if (!multiplanetarySystemTabsLoaded) {
         });
       };
 
-      // Update Shared Systems for Galactic War's systems count
-      var reloadSystems = function () {
-        if (model.systemSources) {
-          model.systemSources.valueHasMutated();
-        }
-      };
-
       // Create an empty tab to load in time for Shared Systems for Galactic War
       loadTabs(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
 
@@ -195,7 +188,10 @@ if (!multiplanetarySystemTabsLoaded) {
 
           $.when.apply($, deferredQueue).then(function () {
             loadTabs(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
-            reloadSystems();
+            // Update Shared Systems for Galactic War's systems count
+            if (model.systemSources) {
+              model.systemSources.valueHasMutated();
+            }
           });
 
           // Fallback for using the mod without map packs outside of Galactic War
