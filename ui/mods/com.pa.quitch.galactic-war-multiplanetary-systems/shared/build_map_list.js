@@ -97,7 +97,7 @@ if (!multiplanetarySystemTabsLoaded) {
         premadeSystems
       ) {
         // Protect against failure in gw_start
-        if (!_.isUndefined(model.cShareSystems_tabsIndex)) {
+        if (model.cShareSystems_tabsIndex) {
           var defaultMultiplanetary = [];
           var defaultMultiStart = [];
           var defaultSingleSystem = [];
