@@ -124,12 +124,12 @@ if (!multiplanetarySystemTabsLoaded) {
 
           // Add My Systems and PA maps when tabs are ready
           var addedDefaultMultiSystems = false;
-          var addedmultiStartMapss = false;
+          var addedMultiStartMaps = false;
           var addedDefaultSingleSystem = false;
           model.cShareSystems_tabsIndex.subscribe(function (tabs) {
             if (
               addedDefaultMultiSystems === false ||
-              addedmultiStartMapss === false ||
+              addedMultiStartMaps === false ||
               addedDefaultSingleSystem === false
             ) {
               _.forEach(tabs, function (tab) {
@@ -141,10 +141,10 @@ if (!multiplanetarySystemTabsLoaded) {
                   addedDefaultMultiSystems = true;
                 } else if (
                   tab.name === mapTabTwo &&
-                  addedmultiStartMapss === false
+                  addedMultiStartMaps === false
                 ) {
                   tab.systems(tab.systems().concat(multiStartMaps));
-                  addedmultiStartMapss = true;
+                  addedMultiStartMaps = true;
                 } else if (
                   tab.name === mapTabThree &&
                   addedDefaultSingleSystem === false
@@ -195,12 +195,14 @@ if (!multiplanetarySystemTabsLoaded) {
 
           $.when.apply($, deferredQueue).then(function () {
             if (mapPacksInstalled === true) {
+              console.log("Map packs");
               tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
               // Update Shared Systems for Galactic War's systems count
               if (model.systemSources) {
                 model.systemSources.valueHasMutated();
               }
             } else {
+              console.log("No map packs");
               tabOps.add(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
             }
           });
