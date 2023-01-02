@@ -1,9 +1,9 @@
-var multiplanetarySystemTabsLoaded;
+var planetarySystemTabsLoaded;
 
-if (!multiplanetarySystemTabsLoaded) {
-  multiplanetarySystemTabsLoaded = true;
+if (!planetarySystemTabsLoaded) {
+  planetarySystemTabsLoaded = true;
 
-  function multiplanetarySystemTabs() {
+  function planetarySystemTabs() {
     try {
       var multiplanetaryMaps = [];
       var multiStartMaps = [];
@@ -211,5 +211,5 @@ if (!multiplanetarySystemTabsLoaded) {
       console.error(JSON.stringify(e));
     }
   }
-  multiplanetarySystemTabs();
+  planetarySystemTabs();
 }
