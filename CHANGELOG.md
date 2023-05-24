@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Unreleased
+
+- Removed Shared Systems for Galactic War as a dependency
+
 ## v2.2.0 - 2022-12-31
 
 - Added System Sharing for Titans & Classic as a mod dependency

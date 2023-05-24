@@ -20,9 +20,6 @@
     ]
   },
   "priority": 100,
-  "dependencies": [
-    "com.wondible.pa.gw_shared_systems",
-    "com.pa.conundrum.cShareSystems"
-  ],
+  "dependencies": ["com.pa.conundrum.cShareSystems"],
   "github": "https://github.com/Quitch/Galactic-War-Multiplanetary-Systems"
 }
