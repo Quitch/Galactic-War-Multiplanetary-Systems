@@ -4,9 +4,9 @@
   "display_name": "Single & Multiplanetary System Tabs",
   "description": "Creates three new map tabs, one for single planet systems, one for all your multiplanetary systems, and one for your multiplanetary systems with multiple starting planets. Can be used in conjunction with Shared Systems for Galactic War. Does not come with any maps, it uses maps from your currently installed and active map packs.",
   "author": "Quitch",
-  "version": "2.2.0",
-  "build": "116400",
-  "date": "2022-12-31",
+  "version": "2.3.0",
+  "build": "116982",
+  "date": "2023-08-15",
   "signature": " ",
   "forum": "https://steamcommunity.com/app/386070/discussions/0/3127164600312849871/",
   "icon": "https://raw.githubusercontent.com/Quitch/Galactic-War-Multiplanetary-Systems/develop/images/icon.png",
@@ -20,9 +20,6 @@
     ]
   },
   "priority": 100,
-  "dependencies": [
-    "com.wondible.pa.gw_shared_systems",
-    "com.pa.conundrum.cShareSystems"
-  ],
+  "dependencies": ["com.pa.conundrum.cShareSystems"],
   "github": "https://github.com/Quitch/Galactic-War-Multiplanetary-Systems"
 }

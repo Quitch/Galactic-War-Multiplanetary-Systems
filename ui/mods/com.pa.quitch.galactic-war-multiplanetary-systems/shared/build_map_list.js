@@ -1,10 +1,14 @@
-var multiplanetarySystemTabsLoaded;
+var planetarySystemTabsLoaded;
 
-if (!multiplanetarySystemTabsLoaded) {
-  multiplanetarySystemTabsLoaded = true;
+if (!planetarySystemTabsLoaded) {
+  planetarySystemTabsLoaded = true;
 
-  function multiplanetarySystemTabs() {
+  function planetarySystemTabs() {
     try {
+      if (typeof cShareSystems === "undefined") {
+        return;
+      }
+
       var multiplanetaryMaps = [];
       var multiStartMaps = [];
       var singlePlanetMaps = [];
@@ -39,7 +43,6 @@ if (!multiplanetarySystemTabsLoaded) {
             return filePathOrSystem;
           }
         }
-        return undefined;
       };
 
       var processSystems = function (
@@ -211,5 +214,5 @@ if (!multiplanetarySystemTabsLoaded) {
       console.error(JSON.stringify(e));
     }
   }
-  multiplanetarySystemTabs();
+  planetarySystemTabs();
 }
