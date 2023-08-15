@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v2.3.0 - 2023-08-15
 
 - Removed Shared Systems for Galactic War as a dependency
 
