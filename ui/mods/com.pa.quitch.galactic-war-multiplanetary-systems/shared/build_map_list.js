@@ -5,6 +5,10 @@ if (!planetarySystemTabsLoaded) {
 
   function planetarySystemTabs() {
     try {
+      if (typeof cShareSystems === "undefined") {
+        return;
+      }
+
       var multiplanetaryMaps = [];
       var multiStartMaps = [];
       var singlePlanetMaps = [];
