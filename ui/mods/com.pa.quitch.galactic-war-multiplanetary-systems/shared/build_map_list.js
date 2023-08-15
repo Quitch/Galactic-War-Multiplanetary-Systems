@@ -43,7 +43,6 @@ if (!planetarySystemTabsLoaded) {
             return filePathOrSystem;
           }
         }
-        return undefined;
       };
 
       var processSystems = function (
