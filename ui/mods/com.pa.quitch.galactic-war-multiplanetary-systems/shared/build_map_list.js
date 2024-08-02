@@ -12,14 +12,14 @@ function planetarySystemTabs() {
       return;
     }
 
-    var multiplanetaryMaps = [];
-    var multiStartMaps = [];
-    var singlePlanetMaps = [];
-    var mapTabOne = loc("!LOC:Multiplanetary Systems");
-    var mapTabTwo = loc("!LOC:Multiplanetary Spawns");
-    var mapTabThree = loc("!LOC:Single Planet Systems");
+    const multiplanetaryMaps = [];
+    const multiStartMaps = [];
+    const singlePlanetMaps = [];
+    const mapTabOne = loc("!LOC:Multiplanetary Systems");
+    const mapTabTwo = loc("!LOC:Multiplanetary Spawns");
+    const mapTabThree = loc("!LOC:Single Planet Systems");
 
-    var tabOps = {
+    const tabOps = {
       load: function (mapsOne, mapsTwo, mapsThree) {
         cShareSystems.load_pas(mapTabOne, mapsOne);
         cShareSystems.load_pas(mapTabTwo, mapsTwo);
@@ -32,13 +32,13 @@ function planetarySystemTabs() {
       },
     };
 
-    var checkForMultiplePlanets = function (numberOfPlanets) {
+    const checkForMultiplePlanets = function (numberOfPlanets) {
       return numberOfPlanets > 1;
     };
 
-    var checkForMultiplanetarySpawns = function (planets, filePathOrSystem) {
+    const checkForMultiplanetarySpawns = function (planets, filePathOrSystem) {
       var startingPlanets = 0;
-      for (var planet of planets) {
+      for (const planet of planets) {
         if (planet.starting_planet === true) {
           startingPlanets++;
         }
@@ -48,7 +48,7 @@ function planetarySystemTabs() {
       }
     };
 
-    var processSystems = function (
+    const processSystems = function (
       planets,
       multiPlanetMaps,
       multiSpawnMaps,
@@ -63,7 +63,7 @@ function planetarySystemTabs() {
       } else {
         singlePlanetResult = filePathOrSystem;
       }
-      var multiStartResult = checkForMultiplanetarySpawns(
+      const multiStartResult = checkForMultiplanetarySpawns(
         planets,
         filePathOrSystem
       );
@@ -79,7 +79,7 @@ function planetarySystemTabs() {
       }
     };
 
-    var processDefaultSystems = function (
+    const processDefaultSystems = function (
       systems,
       multiPlanetMaps,
       multiSpawnMaps,
@@ -102,11 +102,11 @@ function planetarySystemTabs() {
     require(["/main/shared/js/premade_systems.js"], function (premadeSystems) {
       // Protect against failure in gw_start
       if (model.cShareSystems_tabsIndex) {
-        var defaultMultiplanetary = [];
-        var defaultMultiStart = [];
-        var defaultSingleSystem = [];
+        const defaultMultiplanetary = [];
+        const defaultMultiStart = [];
+        const defaultSingleSystem = [];
 
-        var userSystems = ko
+        const userSystems = ko
           .observableArray([])
           .extend({ db: { local_name: "systems", db_name: "misc" } });
 
@@ -163,7 +163,7 @@ function planetarySystemTabs() {
 
       // Process pas files from all active map packs
       api.file.list("/ui/mods/", true).then(function (fileList) {
-        var deferredQueue = [];
+        const deferredQueue = [];
         var mapPacksInstalled = false;
 
         _.forEach(fileList, function (filePath) {
@@ -173,10 +173,10 @@ function planetarySystemTabs() {
 
           mapPacksInstalled = true;
 
-          var deferred = $.Deferred();
+          const deferred = $.Deferred();
           deferredQueue.push(deferred);
 
-          var coherentFilePath = "coui:/" + filePath;
+          const coherentFilePath = "coui:/" + filePath;
 
           $.getJSON(coherentFilePath, function (mapFile) {
             if (!mapFile.planets) {
