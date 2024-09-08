@@ -38,7 +38,7 @@ function planetarySystemTabs() {
 
     const checkForMultiplanetarySpawns = function (planets, filePathOrSystem) {
       var startingPlanets = 0;
-      for (const planet of planets) {
+      for (var planet of planets) {
         if (planet.starting_planet === true) {
           startingPlanets++;
         }
