@@ -15,20 +15,20 @@ function planetarySystemTabs() {
     const multiplanetaryMaps = [];
     const multiStartMaps = [];
     const singlePlanetMaps = [];
-    const mapTabOne = loc("!LOC:Multiplanetary Systems");
-    const mapTabTwo = loc("!LOC:Multiplanetary Spawns");
-    const mapTabThree = loc("!LOC:Single Planet Systems");
+    const tabOne = loc("!LOC:Multiplanetary Systems");
+    const tabTwo = loc("!LOC:Multiplanetary Spawns");
+    const tabThree = loc("!LOC:Single Planet Systems");
 
     const tabOps = {
       load: function (mapsOne, mapsTwo, mapsThree) {
-        cShareSystems.load_pas(mapTabOne, mapsOne);
-        cShareSystems.load_pas(mapTabTwo, mapsTwo);
-        cShareSystems.load_pas(mapTabThree, mapsThree);
+        cShareSystems.load_pas(tabOne, mapsOne);
+        cShareSystems.load_pas(tabTwo, mapsTwo);
+        cShareSystems.load_pas(tabThree, mapsThree);
       },
       add: function (mapsOne, mapsTwo, mapsThree) {
-        cShareSystems.addTab(mapTabOne, mapsOne);
-        cShareSystems.addTab(mapTabTwo, mapsTwo);
-        cShareSystems.addTab(mapTabThree, mapsThree);
+        cShareSystems.addTab(tabOne, mapsOne);
+        cShareSystems.addTab(tabTwo, mapsTwo);
+        cShareSystems.addTab(tabThree, mapsThree);
       },
     };
 
@@ -39,7 +39,7 @@ function planetarySystemTabs() {
     const checkForMultiplanetarySpawns = function (planets, filePathOrSystem) {
       var startingPlanets = 0;
       for (var planet of planets) {
-        if (planet.starting_planet === true) {
+        if (planet.starting_planet) {
           startingPlanets++;
         }
         if (startingPlanets > 1) {
@@ -58,7 +58,7 @@ function planetarySystemTabs() {
       var multiPlanetResult; // String or Object
       var singlePlanetResult; // String or Object
 
-      if (checkForMultiplePlanets(planets.length) === true) {
+      if (checkForMultiplePlanets(planets.length)) {
         multiPlanetResult = filePathOrSystem;
       } else {
         singlePlanetResult = filePathOrSystem;
@@ -68,14 +68,13 @@ function planetarySystemTabs() {
         filePathOrSystem
       );
 
-      if (!_.isUndefined(multiPlanetResult)) {
+      if (multiPlanetResult) {
         multiPlanetMaps.push(multiPlanetResult);
-      }
-      if (!_.isUndefined(multiStartResult)) {
-        multiSpawnMaps.push(multiStartResult);
-      }
-      if (!_.isUndefined(singlePlanetResult)) {
+      } else if (singlePlanetResult) {
         singlePlanets.push(singlePlanetResult);
+      }
+      if (multiStartResult) {
+        multiSpawnMaps.push(multiStartResult);
       }
     };
 
@@ -132,27 +131,18 @@ function planetarySystemTabs() {
         var addedDefaultSingleSystem = false;
         model.cShareSystems_tabsIndex.subscribe(function (tabs) {
           if (
-            addedDefaultMultiSystems === false ||
-            addedDefaultMultiStart === false ||
-            addedDefaultSingleSystem === false
+            !addedDefaultMultiSystems ||
+            !addedDefaultMultiStart ||
+            !addedDefaultSingleSystem
           ) {
             _.forEach(tabs, function (tab) {
-              if (
-                tab.name === mapTabOne &&
-                addedDefaultMultiSystems === false
-              ) {
+              if (tab.name === tabOne && !addedDefaultMultiSystems) {
                 tab.systems(tab.systems().concat(defaultMultiplanetary));
                 addedDefaultMultiSystems = true;
-              } else if (
-                tab.name === mapTabTwo &&
-                addedDefaultMultiStart === false
-              ) {
+              } else if (tab.name === tabTwo && !addedDefaultMultiStart) {
                 tab.systems(tab.systems().concat(defaultMultiStart));
                 addedDefaultMultiStart = true;
-              } else if (
-                tab.name === mapTabThree &&
-                addedDefaultSingleSystem === false
-              ) {
+              } else if (tab.name === tabThree && !addedDefaultSingleSystem) {
                 tab.systems(tab.systems().concat(defaultSingleSystem));
                 addedDefaultSingleSystem = true;
               }
@@ -198,10 +188,10 @@ function planetarySystemTabs() {
         });
 
         $.when.apply($, deferredQueue).then(function () {
-          if (mapPacksInstalled === true) {
+          if (mapPacksInstalled) {
             tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
-            // Update Shared Systems for Galactic War's systems count
             if (model.systemSources) {
+              // Update Shared Systems for Galactic War's systems count
               model.systemSources.valueHasMutated();
             }
           } else {
