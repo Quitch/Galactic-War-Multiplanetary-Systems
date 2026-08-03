@@ -80,7 +80,7 @@ That drives the three calls in the file:
 
 ### Error handling
 
-The whole body sits in one `try`/`catch` that logs both `e` and `JSON.stringify(e)` — the standard shape across Quitch's PA mods, and necessary because an exception escaping a scene script takes out the rest of the scene's JS.
+The whole body sits in one `try`/`catch` that logs both `e` and `(e.stack || e.message || e)` — the standard shape across Quitch's PA mods, and necessary because an exception escaping a scene script takes out the rest of the scene's JS.
 
 ## Conventions
 

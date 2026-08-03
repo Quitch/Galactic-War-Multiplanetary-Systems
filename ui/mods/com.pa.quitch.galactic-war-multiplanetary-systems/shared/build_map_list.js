@@ -194,7 +194,9 @@ function planetarySystemTabs() {
     });
   } catch (e) {
     console.error(e);
-    console.error(JSON.stringify(e));
+    console.error(
+      "Single & Multiplanetary System Tab: " + (e.stack || e.message || e)
+    );
   }
 }
 planetarySystemTabs();
