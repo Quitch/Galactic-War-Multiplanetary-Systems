@@ -1,5 +1,5 @@
 {
-  "name": "Queller-AI",
+  "name": "single-and-multiplanetary-system-tabs",
   "private": true,
   "scripts": {
     "lint:js": "eslint .",
