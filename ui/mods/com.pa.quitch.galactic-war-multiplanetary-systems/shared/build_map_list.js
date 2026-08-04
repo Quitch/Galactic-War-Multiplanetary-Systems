@@ -13,6 +13,10 @@ function planetarySystemTabs() {
 
   var MOD_NAME = "Single & Multiplanetary System Tab";
 
+  // This file. The release identifier, which the ui tree keeps even on develop.
+  var SELF_URL =
+    "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js";
+
   var logError = function (e) {
     console.error(e);
     console.error(MOD_NAME + ": " + (e.stack || e.message || e));
@@ -238,6 +242,19 @@ function planetarySystemTabs() {
           // premade and user systems need; load_pas would create nothing.
           cShareSystems.addTab(tab.name, tab.systems);
         } else {
+          if (tab.urls.length === 0) {
+            // Shared Systems for Galactic War re-checks an empty pack's file
+            // list every second and never gives up, so a tab that matched
+            // nothing would leave its checkbox spinning and Go To War disabled
+            // - and because it waits on all the selected sources together, it
+            // blocks the rest of them too. Give it this file instead: that mod
+            // fetched this very URL to inject us, so it is certain to fetch,
+            // and it is not JSON, so the pack settles as an empty source.
+            console.warn(
+              MOD_NAME + ": " + tab.name + " matched no map pack systems"
+            );
+            tab.urls.push(SELF_URL);
+          }
           // gw_start. Shared Systems for Galactic War is already holding this
           // exact array, so filling it was the delivery - re-registering the
           // same object is a no-op there and keeps any other implementation of
