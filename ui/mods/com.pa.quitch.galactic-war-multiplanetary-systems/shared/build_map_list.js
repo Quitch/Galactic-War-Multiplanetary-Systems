@@ -90,111 +90,142 @@ function planetarySystemTabs() {
     // Create an empty tab to load in time for Shared Systems for Galactic War
     tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
 
-    require(["/main/shared/js/premade_systems.js"], function (premadeSystems) {
-      // Protect against failure in gw_start
-      if (model.cShareSystems_tabsIndex) {
-        var defaultMultiplanetary = [];
-        var defaultMultiStart = [];
-        var defaultSingleSystem = [];
+    // model.cShareSystems_tabsIndex only exists in load_planet, where
+    // cShareSystems builds the tab UI. gw_start has no tab index, no premade
+    // systems and no user systems, so this whole branch is skipped there.
+    if (model.cShareSystems_tabsIndex) {
+      var defaultMultiplanetary = [];
+      var defaultMultiStart = [];
+      var defaultSingleSystem = [];
 
-        var userSystems = ko
-          .observableArray([])
-          .extend({ db: { local_name: "systems", db_name: "misc" } });
+      var userSystems = ko
+        .observableArray([])
+        .extend({ db: { local_name: "systems", db_name: "misc" } });
 
-        // Scan My Systems and PA for maps
-        userSystems.ready.then(function (systems) {
-          processDefaultSystems(
-            systems,
-            defaultMultiplanetary,
-            defaultMultiStart,
-            defaultSingleSystem
-          );
-        });
+      // Neither read can be allowed to reject: $.when settles as soon as one of
+      // its inputs fails, so a failed My Systems read would otherwise fire the
+      // gate below while the PA systems were still arriving.
+      var premadeSystemsRead = $.Deferred();
+      var userSystemsRead = $.Deferred();
+
+      var readPremadeSystems = function (systems) {
         processDefaultSystems(
-          premadeSystems,
+          systems,
           defaultMultiplanetary,
           defaultMultiStart,
           defaultSingleSystem
         );
+        premadeSystemsRead.resolve();
+      };
 
-        // Add My Systems and PA maps when tabs are ready
-        var addedDefaultMultiSystems = false;
-        var addedDefaultMultiStart = false;
-        var addedDefaultSingleSystem = false;
-        model.cShareSystems_tabsIndex.subscribe(function (tabs) {
-          // Wait on the My Systems read so it can't land after we've copied the
-          // arrays into the tabs. .always because a failed read must still let
-          // the PA systems through.
-          userSystems.ready.always(function () {
-            if (
-              !addedDefaultMultiSystems ||
-              !addedDefaultMultiStart ||
-              !addedDefaultSingleSystem
-            ) {
-              _.forEach(tabs, function (tab) {
-                if (tab.name === tabOne && !addedDefaultMultiSystems) {
-                  tab.systems(tab.systems().concat(defaultMultiplanetary));
-                  addedDefaultMultiSystems = true;
-                } else if (tab.name === tabTwo && !addedDefaultMultiStart) {
-                  tab.systems(tab.systems().concat(defaultMultiStart));
-                  addedDefaultMultiStart = true;
-                } else if (tab.name === tabThree && !addedDefaultSingleSystem) {
-                  tab.systems(tab.systems().concat(defaultSingleSystem));
-                  addedDefaultSingleSystem = true;
-                }
-              });
-            }
-          });
-        });
+      // The base game already holds the live system list in
+      // model.premadeSystems. /main/shared/js/premade_systems.js, which this
+      // used to require, is a 23 MB copy that nothing in the base game reads
+      // and that is two systems out of date.
+      if (!model.premadeSystems) {
+        premadeSystemsRead.resolve();
+      } else if (_.size(model.premadeSystems()) > 0) {
+        readPremadeSystems(model.premadeSystems());
+      } else {
+        // ko.extenders.memory fills the observable asynchronously from
+        // api.memory, so it is always still empty when scene mods run. One
+        // notification is all it ever sends.
+        var premadeSubscription = model.premadeSystems.subscribe(
+          function (systems) {
+            premadeSubscription.dispose();
+            readPremadeSystems(systems);
+          }
+        );
       }
 
-      // Process pas files from all active map packs
-      api.file.list("/ui/mods/", true).then(function (fileList) {
-        var deferredQueue = [];
-        var mapPacksInstalled = false;
+      // .always, not .then: the db extender rejects with no arguments when it
+      // cannot create the row, and a failed My Systems read must still let the
+      // PA systems through.
+      userSystems.ready.always(function () {
+        processDefaultSystems(
+          userSystems(),
+          defaultMultiplanetary,
+          defaultMultiStart,
+          defaultSingleSystem
+        );
+        userSystemsRead.resolve();
+      });
 
-        _.forEach(fileList, function (filePath) {
-          if (!_.endsWith(filePath, ".pas")) {
+      var addedDefaultMultiSystems = false;
+      var addedDefaultMultiStart = false;
+      var addedDefaultSingleSystem = false;
+      model.cShareSystems_tabsIndex.subscribe(function (tabs) {
+        // Wait on both reads so neither can land after we've copied the arrays
+        // into the tabs.
+        $.when(premadeSystemsRead, userSystemsRead).always(function () {
+          if (
+            !addedDefaultMultiSystems ||
+            !addedDefaultMultiStart ||
+            !addedDefaultSingleSystem
+          ) {
+            _.forEach(tabs, function (tab) {
+              if (tab.name === tabOne && !addedDefaultMultiSystems) {
+                tab.systems(tab.systems().concat(defaultMultiplanetary));
+                addedDefaultMultiSystems = true;
+              } else if (tab.name === tabTwo && !addedDefaultMultiStart) {
+                tab.systems(tab.systems().concat(defaultMultiStart));
+                addedDefaultMultiStart = true;
+              } else if (tab.name === tabThree && !addedDefaultSingleSystem) {
+                tab.systems(tab.systems().concat(defaultSingleSystem));
+                addedDefaultSingleSystem = true;
+              }
+            });
+          }
+        });
+      });
+    }
+
+    // Process pas files from all active map packs
+    api.file.list("/ui/mods/", true).then(function (fileList) {
+      var deferredQueue = [];
+      var mapPacksInstalled = false;
+
+      _.forEach(fileList, function (filePath) {
+        if (!_.endsWith(filePath, ".pas")) {
+          return;
+        }
+
+        mapPacksInstalled = true;
+
+        var deferred = $.Deferred();
+        deferredQueue.push(deferred);
+
+        var coherentFilePath = "coui:/" + filePath;
+
+        $.getJSON(coherentFilePath, function (mapFile) {
+          if (!mapFile.planets) {
+            // This should never happen
+            console.warn("No planets found in " + coherentFilePath);
             return;
           }
 
-          mapPacksInstalled = true;
-
-          var deferred = $.Deferred();
-          deferredQueue.push(deferred);
-
-          var coherentFilePath = "coui:/" + filePath;
-
-          $.getJSON(coherentFilePath, function (mapFile) {
-            if (!mapFile.planets) {
-              // This should never happen
-              console.warn("No planets found in " + coherentFilePath);
-              return;
-            }
-
-            processSystems(
-              mapFile.planets,
-              multiplanetaryMaps,
-              multiStartMaps,
-              singlePlanetMaps,
-              coherentFilePath
-            );
-          }).always(function () {
-            deferred.resolve();
-          });
+          processSystems(
+            mapFile.planets,
+            multiplanetaryMaps,
+            multiStartMaps,
+            singlePlanetMaps,
+            coherentFilePath
+          );
+        }).always(function () {
+          deferred.resolve();
         });
+      });
 
-        $.when.apply($, deferredQueue).then(function () {
-          if (mapPacksInstalled) {
-            tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
-            if (model.systemSources) {
-              // Update Shared Systems for Galactic War's systems count
-              model.systemSources.valueHasMutated();
-            }
-          } else if (_.isFunction(cShareSystems.addTab)) {
-            tabOps.add(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+      $.when.apply($, deferredQueue).then(function () {
+        if (mapPacksInstalled) {
+          tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+          if (model.systemSources) {
+            // Update Shared Systems for Galactic War's systems count
+            model.systemSources.valueHasMutated();
           }
-        });
+        } else if (_.isFunction(cShareSystems.addTab)) {
+          tabOps.add(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+        }
       });
     });
   } catch (e) {
