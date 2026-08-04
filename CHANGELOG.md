@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v3.0.0 - 2026-08-04
+
+- Include Planetary Annihilation's own systems in the Galactic War tabs
+- A Galactic War tab no longer offers systems another selected source already provides
+- Avoid user systems being dropped due to a race condition
+- Fixed your saved systems potentially being lost on a new profile
+- Fixed a tab going missing when no installed map pack had systems of that kind
+- Fixed the two systems added to Planetary Annihilation since 2022 being absent
+- Fixed one malformed system stopping every premade and user system appearing
+- Fixed Galactic War hanging when a tab matched no map pack systems
+- Systems with no planets are no longer listed
+- Improved loading speed
+- Log map pack files which cannot be read
+
 ## v2.3.0 - 2023-08-15
 
 - Removed Shared Systems for Galactic War as a dependency
