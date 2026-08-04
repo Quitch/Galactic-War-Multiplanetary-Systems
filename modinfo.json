@@ -9,7 +9,7 @@
   "date": "2023-08-15",
   "signature": " ",
   "forum": "https://steamcommunity.com/app/386070/discussions/0/3127164600312849871/",
-  "icon": "https://raw.githubusercontent.com/Quitch/Galactic-War-Multiplanetary-Systems/develop/images/icon.png",
+  "icon": "https://raw.githubusercontent.com/Quitch/Galactic-War-Multiplanetary-Systems/main/images/icon.png",
   "category": ["maps", "gw", "classic", "titans"],
   "scenes": {
     "load_planet": [
