@@ -11,11 +11,38 @@ function planetarySystemTabs() {
 
   planetarySystemTabsLoaded = true;
 
+  var MOD_NAME = "Single & Multiplanetary System Tab";
+
+  var logError = function (e) {
+    console.error(e);
+    console.error(MOD_NAME + ": " + (e.stack || e.message || e));
+  };
+
+  // Everything below runs long after the try/catch has exited. jQuery abandons
+  // the rest of a callback list when one entry throws, and Coherent's promise
+  // turns a throw into a rejection nobody observes, so one bad system in one
+  // file could otherwise strand the whole scan or every default system.
+  var guard = function (fn) {
+    return function () {
+      try {
+        return fn.apply(null, arguments);
+      } catch (e) {
+        logError(e);
+      }
+    };
+  };
+
   try {
+    var playablePlanets = function (system) {
+      return system && _.isArray(system.planets) && system.planets.length > 0
+        ? system.planets
+        : null;
+    };
+
     var hasMultipleSpawns = function (planets) {
       var spawns = 0;
       for (var planet of planets) {
-        if (planet.starting_planet) {
+        if (planet && planet.starting_planet) {
           spawns++;
           if (spawns > 1) {
             return true;
@@ -49,7 +76,7 @@ function planetarySystemTabs() {
       // More than one spawn implies more than one planet, so no length test.
       makeTab(loc("!LOC:Multiplanetary Spawns"), hasMultipleSpawns),
       makeTab(loc("!LOC:Single Planet Systems"), function (planets) {
-        return planets.length < 2;
+        return planets.length === 1;
       }),
     ];
 
@@ -82,16 +109,23 @@ function planetarySystemTabs() {
 
       var addDefaultSystems = function (systems, bucket) {
         _.forEach(systems, function (system) {
-          _.forEach(matchingTabs(system.planets), function (tab) {
+          var planets = playablePlanets(system);
+          if (!planets) {
+            return;
+          }
+          _.forEach(matchingTabs(planets), function (tab) {
             tab[bucket].push(system);
           });
         });
       };
 
-      var readPremadeSystems = function (systems) {
+      var readPremadeSystems = guard(function (systems) {
         addDefaultSystems(systems, "premade");
-        premadeSystemsRead.resolve();
-      };
+      });
+
+      var readUserSystems = guard(function () {
+        addDefaultSystems(model.userSystems(), "user");
+      });
 
       // The base game already holds the live system list in
       // model.premadeSystems. /main/shared/js/premade_systems.js, which this
@@ -101,6 +135,7 @@ function planetarySystemTabs() {
         premadeSystemsRead.resolve();
       } else if (_.size(model.premadeSystems()) > 0) {
         readPremadeSystems(model.premadeSystems());
+        premadeSystemsRead.resolve();
       } else {
         // ko.extenders.memory fills the observable asynchronously from
         // api.memory, so it is always still empty when scene mods run. One
@@ -109,6 +144,7 @@ function planetarySystemTabs() {
           function (systems) {
             premadeSubscription.dispose();
             readPremadeSystems(systems);
+            premadeSystemsRead.resolve();
           }
         );
       }
@@ -126,7 +162,7 @@ function planetarySystemTabs() {
         // cannot create the row, and a failed My Systems read must still let the
         // PA systems through.
         model.userSystems.ready.always(function () {
-          addDefaultSystems(model.userSystems(), "user");
+          readUserSystems();
           userSystemsRead.resolve();
         });
       } else {
@@ -164,78 +200,117 @@ function planetarySystemTabs() {
       // cShareSystems has yet to create - so it disposes itself once all three
       // are done, rather than living for the scene and re-running on every
       // addTab any other mod makes.
-      $.when(premadeSystemsRead, userSystemsRead).done(function () {
-        if (addDefaultsToTabs() === 0) {
-          return;
-        }
-        var tabsSubscription = model.cShareSystems_tabsIndex.subscribe(
-          function () {
-            if (addDefaultsToTabs() === 0) {
-              tabsSubscription.dispose();
-            }
+      $.when(premadeSystemsRead, userSystemsRead).done(
+        guard(function () {
+          if (addDefaultsToTabs() === 0) {
+            return;
           }
-        );
-      });
+          var tabsSubscription = model.cShareSystems_tabsIndex.subscribe(
+            guard(function () {
+              if (addDefaultsToTabs() === 0) {
+                tabsSubscription.dispose();
+              }
+            })
+          );
+        })
+      );
     }
 
-    // Process pas files from all active map packs
-    api.file.list("/ui/mods/", true).then(function (fileList) {
-      var deferredQueue = [];
-      var mapPacksInstalled = false;
+    var deliverTabs = function () {
+      var foundMapPackSystems = _.some(tabs, function (tab) {
+        return tab.urls.length > 0;
+      });
 
+      if (foundMapPackSystems) {
+        _.forEach(tabs, function (tab) {
+          cShareSystems.load_pas(tab.name, tab.urls);
+        });
+        if (model.systemSources) {
+          // Update Shared Systems for Galactic War's systems count
+          model.systemSources.valueHasMutated();
+        }
+      } else if (_.isFunction(cShareSystems.addTab)) {
+        // load_pas with an empty array creates no tab at all, so the premade
+        // and user systems would have nowhere to land.
+        _.forEach(tabs, function (tab) {
+          cShareSystems.addTab(tab.name, tab.urls);
+        });
+      }
+    };
+
+    // Every pas file in every active map pack.
+    var scanMapPacks = guard(function (fileList) {
+      if (!_.isArray(fileList)) {
+        // api.file.list rejects with a string rather than throwing. Carry on
+        // with nothing, so load_planet still gets its three tabs and the
+        // premade and user systems that belong in them.
+        console.warn(MOD_NAME + ": could not list /ui/mods/ - " + fileList);
+        fileList = [];
+      }
+
+      var pasUrls = [];
       _.forEach(fileList, function (filePath) {
         // _.endsWith, not the native: PA polyfills String.prototype.endsWith
         // with a one-argument version, so the position argument is silently
         // dropped and the answer can be wrong rather than absent.
-        if (!_.endsWith(filePath, ".pas")) {
+        if (_.endsWith(filePath, ".pas")) {
+          // One slash - the listed path already starts with one.
+          pasUrls.push("coui:/" + filePath);
+        }
+      });
+
+      var matches = new Array(pasUrls.length);
+      var pending = pasUrls.length;
+
+      var readSystem = guard(function (index, system) {
+        var planets = playablePlanets(system);
+        if (!planets) {
+          console.warn(MOD_NAME + ": no planets in " + pasUrls[index]);
           return;
         }
-
-        mapPacksInstalled = true;
-
-        var deferred = $.Deferred();
-        deferredQueue.push(deferred);
-
-        // One slash - the listed path already starts with one.
-        var coherentFilePath = "coui:/" + filePath;
-
-        $.getJSON(coherentFilePath, function (mapFile) {
-          if (!mapFile.planets) {
-            console.warn("No planets found in " + coherentFilePath);
-            return;
-          }
-
-          _.forEach(matchingTabs(mapFile.planets), function (tab) {
-            tab.urls.push(coherentFilePath);
-          });
-        }).always(function () {
-          deferred.resolve();
-        });
+        matches[index] = matchingTabs(planets);
       });
 
-      $.when.apply($, deferredQueue).then(function () {
-        if (mapPacksInstalled) {
-          _.forEach(tabs, function (tab) {
-            cShareSystems.load_pas(tab.name, tab.urls);
+      var finishScan = guard(function () {
+        // Fill the tabs in a second pass so each keeps the file listing's
+        // order, however the fetches interleaved.
+        _.forEach(pasUrls, function (url, index) {
+          _.forEach(matches[index], function (tab) {
+            tab.urls.push(url);
           });
-          if (model.systemSources) {
-            // Update Shared Systems for Galactic War's systems count
-            model.systemSources.valueHasMutated();
-          }
-        } else if (_.isFunction(cShareSystems.addTab)) {
-          // load_pas with an empty array creates no tab at all, so the premade
-          // and user systems would have nowhere to land.
-          _.forEach(tabs, function (tab) {
-            cShareSystems.addTab(tab.name, tab.urls);
+        });
+        deliverTabs();
+      });
+
+      if (pending === 0) {
+        finishScan();
+        return;
+      }
+
+      _.forEach(pasUrls, function (url, index) {
+        $.getJSON(url)
+          .done(function (system) {
+            readSystem(index, system);
+          })
+          .fail(function (jqXHR, textStatus) {
+            console.warn(
+              MOD_NAME + ": could not read " + url + " - " + textStatus
+            );
+          })
+          .always(function () {
+            pending--;
+            if (pending === 0) {
+              finishScan();
+            }
           });
-        }
       });
     });
+
+    // .always, because api.file.list returns a Coherent promise: no done/fail,
+    // and its then() would swallow anything the handler threw.
+    api.file.list("/ui/mods/", true).always(scanMapPacks);
   } catch (e) {
-    console.error(e);
-    console.error(
-      "Single & Multiplanetary System Tab: " + (e.stack || e.message || e)
-    );
+    logError(e);
   }
 }
 planetarySystemTabs();
