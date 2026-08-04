@@ -13,10 +13,6 @@ function planetarySystemTabs() {
 
   var MOD_NAME = "Single & Multiplanetary System Tab";
 
-  // The ui tree keeps the release identifier even on develop.
-  var SELF_URL =
-    "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js";
-
   var logError = function (e) {
     console.error(e);
     console.error(MOD_NAME + ": " + (e.stack || e.message || e));
@@ -206,6 +202,10 @@ function planetarySystemTabs() {
     }
 
     var deliverTabs = function () {
+      // This file. The ui tree keeps the release identifier even on develop.
+      var SELF_URL =
+        "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js";
+
       var foundMapPackSystems = _.some(tabs, function (tab) {
         return tab.urls.length > 0;
       });
