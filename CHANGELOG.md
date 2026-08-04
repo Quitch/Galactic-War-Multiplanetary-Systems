@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Include Planetary Annihilation's own systems in the Galactic War tabs
-- A tab no longer offers systems another selected source already provides
+- A Galactic War tab no longer offers systems another selected source already provides
 - Avoid user systems being dropped due to a race condition
 - Fixed your saved systems potentially being lost on a new profile
 - Fixed a tab going missing when no installed map pack had systems of that kind
