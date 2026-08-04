@@ -133,24 +133,48 @@ function planetarySystemTabs() {
         userSystemsRead.resolve();
       }
 
-      model.cShareSystems_tabsIndex.subscribe(function (liveTabs) {
-        // Wait on both reads so neither can land after we've copied the systems
-        // into the tabs.
-        $.when(premadeSystemsRead, userSystemsRead).always(function () {
-          _.forEach(tabs, function (tab) {
-            if (tab.defaultsAdded) {
-              return;
-            }
-            var liveTab = _.find(liveTabs, { name: tab.name });
-            if (!liveTab) {
-              return;
-            }
+      // Returns the number of tabs cShareSystems has not created yet.
+      var addDefaultsToTabs = function () {
+        var liveTabs = model.cShareSystems_tabsIndex();
+        var waiting = 0;
+
+        _.forEach(tabs, function (tab) {
+          if (tab.defaultsAdded) {
+            return;
+          }
+          var liveTab = _.find(liveTabs, { name: tab.name });
+          if (!liveTab) {
+            waiting++;
+            return;
+          }
+          if (tab.premade.length > 0 || tab.user.length > 0) {
             // Premade before user, matching the base game's
             // premadeSystems().concat(userSystems()).
             liveTab.systems(liveTab.systems().concat(tab.premade, tab.user));
-            tab.defaultsAdded = true;
-          });
+          }
+          tab.defaultsAdded = true;
         });
+
+        return waiting;
+      };
+
+      // Wait for both reads before touching anything, so neither can land after
+      // the systems have been copied across. Tabs that already exist are filled
+      // straight away and the subscription only exists to catch the ones
+      // cShareSystems has yet to create - so it disposes itself once all three
+      // are done, rather than living for the scene and re-running on every
+      // addTab any other mod makes.
+      $.when(premadeSystemsRead, userSystemsRead).done(function () {
+        if (addDefaultsToTabs() === 0) {
+          return;
+        }
+        var tabsSubscription = model.cShareSystems_tabsIndex.subscribe(
+          function () {
+            if (addDefaultsToTabs() === 0) {
+              tabsSubscription.dispose();
+            }
+          }
+        );
       });
     }
 
