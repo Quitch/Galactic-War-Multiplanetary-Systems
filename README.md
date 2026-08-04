@@ -14,8 +14,6 @@ Maps are not included with this mod, they are loaded in maps from map packs you 
 
 You should download and install this mod via the Planetary Annihilation: TITANS in-game [Community Mods](https://steamcommunity.com/sharedfiles/filedetails/?id=1417396826).
 
-## What It Does
-
 ## How to Use
 
 1. Install the mod
