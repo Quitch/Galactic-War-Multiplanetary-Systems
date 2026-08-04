@@ -98,10 +98,6 @@ function planetarySystemTabs() {
       var defaultMultiStart = [];
       var defaultSingleSystem = [];
 
-      var userSystems = ko
-        .observableArray([])
-        .extend({ db: { local_name: "systems", db_name: "misc" } });
-
       // Neither read can be allowed to reject: $.when settles as soon as one of
       // its inputs fails, so a failed My Systems read would otherwise fire the
       // gate below while the PA systems were still arriving.
@@ -138,18 +134,30 @@ function planetarySystemTabs() {
         );
       }
 
-      // .always, not .then: the db extender rejects with no arguments when it
-      // cannot create the row, and a failed My Systems read must still let the
-      // PA systems through.
-      userSystems.ready.always(function () {
-        processDefaultSystems(
-          userSystems(),
-          defaultMultiplanetary,
-          defaultMultiStart,
-          defaultSingleSystem
-        );
+      // Reuse the base game's observable rather than extending our own with the
+      // same db options. A second binding over local_name "systems" re-reads
+      // IndexedDB for no reason, attaches a second write-back subscription to
+      // the user's real My Systems row, and - when localStorage["systems"] is
+      // absent or not a UUID, as on a fresh profile - takes the extender's
+      // addObject branch, minting a rival row and overwriting that key while
+      // the base game's own instance is doing the same. Last writer wins and
+      // the user's saved systems can end up orphaned.
+      if (model.userSystems && model.userSystems.ready) {
+        // .always, not .then: the db extender rejects with no arguments when it
+        // cannot create the row, and a failed My Systems read must still let the
+        // PA systems through.
+        model.userSystems.ready.always(function () {
+          processDefaultSystems(
+            model.userSystems(),
+            defaultMultiplanetary,
+            defaultMultiStart,
+            defaultSingleSystem
+          );
+          userSystemsRead.resolve();
+        });
+      } else {
         userSystemsRead.resolve();
-      });
+      }
 
       var addedDefaultMultiSystems = false;
       var addedDefaultMultiStart = false;
