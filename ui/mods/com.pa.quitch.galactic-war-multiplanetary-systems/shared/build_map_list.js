@@ -102,7 +102,7 @@ function planetarySystemTabs() {
           .extend({ db: { local_name: "systems", db_name: "misc" } });
 
         // Scan My Systems and PA for maps
-        userSystems.subscribe(function (systems) {
+        userSystems.ready.then(function (systems) {
           processDefaultSystems(
             systems,
             defaultMultiplanetary,
