@@ -83,6 +83,21 @@ function planetarySystemTabs() {
       });
     };
 
+    // Shared by both scenes: load_planet fills premade and user, gw_start
+    // fills premade from default_systems.json. The two branches are mutually
+    // exclusive, so reusing the one bucket is safe.
+    var addDefaultSystems = function (systems, bucket) {
+      _.forEach(systems, function (system) {
+        var planets = playablePlanets(system);
+        if (!planets) {
+          return;
+        }
+        _.forEach(matchingTabs(planets), function (tab) {
+          tab[bucket].push(system);
+        });
+      });
+    };
+
     // Scene discriminator: only cShareSystems defines addTab, and it registers
     // for load_planet alone. Its priority 99 against this mod's 100 is what
     // makes reading it this early safe.
@@ -103,18 +118,6 @@ function planetarySystemTabs() {
       // Must not reject: $.when settles the moment one input does.
       var premadeSystemsRead = $.Deferred();
       var userSystemsRead = $.Deferred();
-
-      var addDefaultSystems = function (systems, bucket) {
-        _.forEach(systems, function (system) {
-          var planets = playablePlanets(system);
-          if (!planets) {
-            return;
-          }
-          _.forEach(matchingTabs(planets), function (tab) {
-            tab[bucket].push(system);
-          });
-        });
-      };
 
       var readPremadeSystems = guard(function (systems) {
         addDefaultSystems(systems, "premade");
@@ -201,6 +204,285 @@ function planetarySystemTabs() {
       );
     }
 
+    // gw_start's mirror of the branch above. Shared Systems for Galactic War
+    // is the only implementation of cShareSystems without addTab, so
+    // canAddTabs identifies the mod as well as the scene.
+    if (
+      !canAddTabs &&
+      typeof requireGW === "function" &&
+      typeof UberUtility !== "undefined" &&
+      model.systemSources
+    ) {
+      var DEFAULT_SYSTEMS_KEY = "default_systems";
+      var DEFAULT_SYSTEMS_URL = "coui://ui/main/shared/default_systems.json";
+      var READ_TIMEOUT_MS = 30000;
+
+      var galacticWarDefaultsRead = $.Deferred();
+
+      // Shared Systems for Galactic War waits on every selected source
+      // together, so anything left pending disables Go To War.
+      var settleWithin = function (deferred, settle) {
+        setTimeout(function () {
+          if (deferred.state() === "pending") {
+            settle();
+          }
+        }, READ_TIMEOUT_MS);
+        return deferred;
+      };
+
+      // Not the array form: it defers through require.js's nextTick, a
+      // setTimeout(fn, 4), by which point Shared Systems for Galactic War can
+      // have built its options and started loading them.
+      var gwModule = function (id) {
+        try {
+          return requireGW(id);
+        } catch (e) {
+          return null;
+        }
+      };
+
+      // Shared Systems for Galactic War's own progress format, tooltipped
+      // "Downloaded/Total (Number of Multiplanet)".
+      var countMultiplanetary = function (systems) {
+        return (
+          " (" +
+          _.filter(systems, function (system) {
+            var planets = playablePlanets(system);
+            return planets && planets.length > 1;
+          }).length +
+          ")"
+        );
+      };
+
+      // loadPack fixes up only what it fetched itself. Without this
+      // planet.generator is undefined, and withoutBrokenSystems dereferences
+      // it unguarded.
+      var addSurfaceArea = function (system) {
+        UberUtility.fixupPlanetConfig(system);
+        system.surface_area = 0;
+        _.forEach(system.planets, function (planet) {
+          if (planet.generator && planet.generator.biome !== "gas") {
+            system.surface_area +=
+              4 * Math.PI * Math.pow(planet.generator.radius, 2) * 0.000001;
+          }
+        });
+      };
+
+      // Identifies one system across independently parsed copies - the same
+      // .pas fetched by two tabs, or a PA system reached through both a tab
+      // and Uber. surface_area agrees because every fix-up shares a formula.
+      var systemKey = function (system) {
+        var planets = playablePlanets(system);
+        if (!planets) {
+          return null;
+        }
+        var generator = planets[0].generator || {};
+        return [
+          system.name,
+          planets.length,
+          generator.seed,
+          system.surface_area,
+        ].join("|");
+      };
+
+      var readDefaultSystems = guard(function (systems) {
+        if (!_.isArray(systems) || systems.length === 0) {
+          return false;
+        }
+        _.forEach(systems, addSurfaceArea);
+        addDefaultSystems(systems, "premade");
+        return true;
+      });
+
+      var readGalacticWarDefaults = function () {
+        settleWithin(galacticWarDefaultsRead, function () {
+          console.warn(MOD_NAME + ": timed out reading " + DEFAULT_SYSTEMS_KEY);
+          galacticWarDefaultsRead.resolve();
+        });
+
+        var readFromFile = function () {
+          $.getJSON(DEFAULT_SYSTEMS_URL)
+            .done(function (systems) {
+              if (!readDefaultSystems(systems)) {
+                console.warn(
+                  MOD_NAME + ": no systems in " + DEFAULT_SYSTEMS_URL
+                );
+              }
+            })
+            .fail(function (jqXHR, textStatus) {
+              console.warn(
+                MOD_NAME +
+                  ": could not read " +
+                  DEFAULT_SYSTEMS_URL +
+                  " - " +
+                  textStatus
+              );
+            })
+            .always(function () {
+              galacticWarDefaultsRead.resolve();
+            });
+        };
+
+        // .always plus an _.isArray guard, as with api.file.list: api.memory
+        // returns a Coherent promise, with no done/fail and a then() that
+        // swallows throws. main.js fills it asynchronously, so it can still be
+        // empty here; the file fallback costs three times the transfer.
+        api.memory.load(DEFAULT_SYSTEMS_KEY).always(
+          guard(function (systems) {
+            if (readDefaultSystems(systems)) {
+              galacticWarDefaultsRead.resolve();
+              return;
+            }
+            readFromFile();
+          })
+        );
+      };
+
+      // $.when settles the moment one input rejects, and another source
+      // failing must not take this tab with it.
+      var neverRejects = function (promise) {
+        var settled = $.Deferred();
+        var finish = function (systems) {
+          settled.resolve(_.isArray(systems) ? systems : []);
+        };
+
+        promise.then(finish, function () {
+          finish();
+        });
+
+        return settleWithin(settled, finish);
+      };
+
+      // Every loader Shared Systems for Galactic War builds is memoised, so
+      // this attaches to the promise it is already waiting on rather than
+      // fetching or parsing anything a second time.
+      var systemsFromOtherSources = function (tab) {
+        var precedence = _.indexOf(tabs, tab);
+        var reads = [];
+
+        _.forEach(model.systemSources(), function (source) {
+          if (
+            !source ||
+            !_.isFunction(source.load) ||
+            !_.isFunction(source.selected) ||
+            !source.selected()
+          ) {
+            return;
+          }
+
+          // These tabs overlap each other by design - a multi-spawn system is
+          // in two of them - so tab order decides which supplies it, and no
+          // tab waits on one that is waiting on it.
+          var ownTab = _.find(tabs, { name: source.name });
+          if (ownTab && _.indexOf(tabs, ownTab) >= precedence) {
+            return;
+          }
+
+          var read = null;
+          try {
+            read = source.load();
+          } catch (e) {
+            logError(e);
+          }
+          if (read && _.isFunction(read.then)) {
+            reads.push(neverRejects(read));
+          }
+        });
+
+        return reads;
+      };
+
+      // Its own try/catch, not guard(): guard returns undefined, and a
+      // doneFilter returning undefined resolves with [undefined], which
+      // _.flatten drops into the pool for withoutBrokenSystems to die on.
+      var mergeGalacticWarDefaults = function (
+        tab,
+        packSystems,
+        otherSystems,
+        progress
+      ) {
+        try {
+          var systems = _.isArray(packSystems) ? packSystems : [];
+          var defaults = tab.premade;
+
+          if (otherSystems.length > 0) {
+            var supplied = new Set();
+            _.forEach(otherSystems, function (system) {
+              var key = systemKey(system);
+              if (key) {
+                supplied.add(key);
+              }
+            });
+            var notSuppliedElsewhere = function (system) {
+              var key = systemKey(system);
+              return !key || !supplied.has(key);
+            };
+            systems = _.filter(systems, notSuppliedElsewhere);
+            defaults = _.filter(defaults, notSuppliedElsewhere);
+          }
+
+          // concat, not push: loadPack memoises its promise and returns the
+          // same array to every rebuild.
+          var merged = systems.concat(defaults);
+          if (_.isFunction(progress)) {
+            progress(
+              merged.length + "/" + merged.length + countMultiplanetary(merged)
+            );
+          }
+          return merged;
+        } catch (e) {
+          logError(e);
+          return packSystems;
+        }
+      };
+
+      // Hooks loadPack rather than the option's load: the option looks loadPack
+      // up on this module at call time, and no option exists until
+      // mapPackList() resolves, which is after every injected script has run.
+      var patchMapPackLoader = function (mapPacks) {
+        var loadPack = mapPacks.loadPack;
+
+        mapPacks.loadPack = function (tabName, progress) {
+          var packSystems = loadPack(tabName, progress);
+          var tab = _.find(tabs, { name: tabName });
+          if (!tab) {
+            return packSystems;
+          }
+
+          var otherSources = systemsFromOtherSources(tab);
+          var waitingOn = [packSystems, galacticWarDefaultsRead].concat(
+            otherSources
+          );
+
+          return $.when.apply($, waitingOn).then(function (systems) {
+            // $.when resolves one argument per input, in order, so the other
+            // sources are the trailing ones.
+            var otherSystems = _.flatten(
+              _.takeRight(_.toArray(arguments), otherSources.length)
+            );
+            return mergeGalacticWarDefaults(
+              tab,
+              systems,
+              otherSystems,
+              progress
+            );
+          });
+        };
+      };
+
+      var mapPacksModule = gwModule("/mods/gw_shared_systems/map_packs.js");
+      if (mapPacksModule && _.isFunction(mapPacksModule.loadPack)) {
+        // Started first, so the read overlaps the .pas scan.
+        readGalacticWarDefaults();
+        patchMapPackLoader(mapPacksModule);
+      } else {
+        console.warn(
+          MOD_NAME +
+            ": could not reach Shared Systems for Galactic War's map packs"
+        );
+      }
+    }
+
     var deliverTabs = function () {
       // This file. The ui tree keeps the release identifier even on develop.
       var SELF_URL =
@@ -221,8 +503,14 @@ function planetarySystemTabs() {
             // second forever, and waits on all selected sources together, so an
             // unmatched tab would hang Go To War. This file always fetches and
             // is not JSON, so the pack settles as an empty source instead.
+            // Load-bearing twice over now: the merged promise derives from
+            // loadPack's, so a pack that never settles takes the default
+            // systems down with it.
             console.warn(
-              MOD_NAME + ": " + tab.name + " matched no map pack systems"
+              MOD_NAME +
+                ": " +
+                tab.name +
+                " matched no map pack systems, padding it so the pack settles"
             );
             tab.urls.push(SELF_URL);
           }

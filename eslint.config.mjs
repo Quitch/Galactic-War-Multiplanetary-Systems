@@ -32,6 +32,10 @@ export default defineConfig([
         model: "readonly",
         ko: "readonly",
         loc: "readonly",
+        // Both are reached through a typeof guard first, which would satisfy
+        // no-undef on its own - the calls that follow it would not.
+        requireGW: "readonly",
+        UberUtility: "readonly",
       },
       sourceType: "script",
     },
