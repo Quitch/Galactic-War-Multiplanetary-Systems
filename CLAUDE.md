@@ -8,6 +8,8 @@ A **client mod** for Planetary Annihilation and Planetary Annihilation: TITANS t
 
 The entire mod is one shipped file — [build_map_list.js](ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js) — plus [modinfo.json](modinfo.json). There is no build step, no bundler and no CI; the game loads the JS directly at launch.
 
+**One file is a constraint, not an accident — don't split it.** Shared Systems for Galactic War delivers this mod into `gw_start` by fetching each script in `scene_mod_list.load_planet` as text and injecting it as an inline `<script>` (see below). Three properties of that loop rule out a second file: only sources matching its `load_pas` regex are injected at all, so a helper file would simply never arrive; the fetches are issued in parallel and each injects in its own completion callback, so **injection order is nondeterministic**; and each part lands in its own `<script>` element, so declarations do not hoist between them. Surviving all three needs a namespace object plus a "run once every part has registered" latch in every file — about 30 lines of scaffolding to buy nothing. `load_planet` alone would be fine, because `loadMods` loads in listed order and synchronously; `gw_start` is what forbids it.
+
 The checkout lives in the PA user data directory (`client_mods/Galactic-War-Multiplanetary-Systems`). The game install is a separate workspace folder with its own `CLAUDE.md` covering base-game layout, file shadowing and the Coherent UI engine — read that before looking anything up under `ui/main/`. Never edit anything there.
 
 Two naming quirks, both deliberate, neither to be "fixed":
@@ -27,7 +29,7 @@ npm run verify          # lint:js + format:check
 
 There is no CI and no test suite, so `verify` is the whole automated gate.
 
-Both are clean as of `af9475d`, so any error you see is yours. Note that the shipped file was written with `const` (`5b29b03`, "Implement use of const") and deliberately reverted to `var` in `af9475d` — Chrome 40's block scoping does not create the per-iteration binding ES2015 specifies, so a `const` in a loop head misbehaves. `es-x/no-block-scoped-variables` enforces this; don't "modernise" it back.
+Both are clean as of `ebdf10b`, so any error you see is yours. Note that the shipped file was written with `const` (`5b29b03`, "Implement use of const") and deliberately reverted to `var` in `af9475d` — Chrome 40's block scoping does not create the per-iteration binding ES2015 specifies, so a `const` in a loop head misbehaves. `es-x/no-block-scoped-variables` enforces this; don't "modernise" it back.
 
 Verification of behaviour is in-game only: enable the mod (plus at least one map pack), open skirmish system selection, and check the three tabs. For the Galactic War path you also need Shared Systems for Galactic War installed and a new war started.
 
@@ -46,23 +48,35 @@ The game's Coherent UI runs Chromium 40. `var` only — **no `const`/`let`**, no
 1. The `planetarySystemTabsLoaded` global guard at the top of the file is load-bearing — without it the tabs get built twice in a GW lobby. (This is what CHANGELOG v1.0.3's duplicated Omega Belt was.)
 2. The literal text `cShareSystems.load_pas(` must survive any refactor. Aliasing the call or switching to `cShareSystems["load_pas"]` would stop Shared Systems for Galactic War recognising this mod at all.
 
+**The guard is claimed _after_ the `typeof cShareSystems === "undefined"` bail, and that order is itself load-bearing.** In `gw_start` the mod's own registration always runs first and always bails: `loadMods` → `loadScript` uses a synchronous `XMLHttpRequest`, so every scene script has finished before control returns, whereas `cShareSystems` there is created by `gw_shared_systems/map_packs.js`, an AMD module (`define([], …)`) that RequireJS only resolves afterwards. Pass one therefore never does anything, and the injected pass two is the only one that can. Claim the guard above the bail and Galactic War goes dark, silently — that was shipped once and fixed in `c652f01`.
+
+Pass one being a guaranteed no-op is not a reason to drop the `scenes.gw_start` registration. It costs one `typeof` and one synchronous fetch, and it is the only fallback should anything ever provide `cShareSystems` in that scene by another route.
+
 ### Dependencies and load order
 
-- `com.pa.conundrum.cShareSystems` — **System Sharing for Titans & Classic**, the one declared dependency. It creates the `cShareSystems` global, `model.cShareSystems_tabsIndex` and the tab UI itself. It registers via the legacy top-level `load_planet` key rather than `scenes`, and ships `"priority": 99` against this mod's `100`. Client mods sort **ascending** by priority (`_.sortBy(mods, 'priority')` in the game's `community-mods-manager.js`), so 99 loads before 100 and the global exists by the time this file runs. Don't lower this mod's priority. The `typeof cShareSystems === "undefined"` bail-out at [build_map_list.js:11](ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js#L11) is the belt-and-braces for when it isn't installed at all.
+- `com.pa.conundrum.cShareSystems` — **System Sharing for Titans & Classic**, the one declared dependency. It creates the `cShareSystems` global, `model.cShareSystems_tabsIndex` and the tab UI itself. It registers via the legacy top-level `load_planet` key rather than `scenes`, and ships `"priority": 99` against this mod's `100`. Client mods sort **ascending** by priority (`_.sortBy(mods, 'priority')` in the game's `community-mods-manager.js`), so 99 loads before 100 and the global exists by the time this file runs. Don't lower this mod's priority — that ordering is also what makes it safe to read `cShareSystems.addTab` once, up front, as the scene discriminator. The `typeof cShareSystems === "undefined"` bail-out at the top of [build_map_list.js](ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js) is the belt-and-braces for when it isn't installed at all.
 - `com.wondible.pa.gw_shared_systems` — **Shared Systems for Galactic War**. Dropped as a hard dependency in v2.3.0, but the code still cooperates with it closely (see below). It is optional; everything must degrade gracefully without it.
 
 ### Classification
 
-`processSystems` is the whole rule set: more than one planet → multiplanetary; of those, more than one `starting_planet` → **also** multiplanetary spawns; otherwise single planet. A multi-start system therefore appears in **both** tab one and tab two, which is intended. `checkForMultiplanetarySpawns` short-circuits as soon as it sees a second starting planet, so it never counts past two.
+The three tabs are one array of descriptors built by `makeTab`, each holding its own name, its `matches(planets)` predicate and the buckets it collects into. Everything — registration, classification, delivery — iterates that array, so a tab is added or changed in one place.
+
+The predicates are deliberately **independent** rather than one dispatch returning a single verdict: more than one planet → multiplanetary; more than one `starting_planet` → multiplanetary spawns; exactly one planet → single planet. A multi-start system matches the first two and appears in **both**, which is intended. `hasMultipleSpawns` short-circuits on the second starting planet, so it never counts past two, and it implies "more than one planet" on its own, which is why tab two has no length test.
+
+`playablePlanets` is the gate in front of all of it: a system with no `planets` array, or an empty one, matches nothing. Zero-planet systems used to count as single-planet, and selecting one made the base game dereference `planets[0].planet` in its detail pane.
 
 ### Two system sources, two payload shapes
 
-The same `processSystems` is fed from two places, and its last parameter is named `filePathOrSystem` because the two hand it different things:
+Classification is fed from two places, and they hand over different things:
 
-1. **Premade and user systems** — the AMD module `/main/shared/js/premade_systems.js`, plus user systems read through a fresh `ko.observableArray().extend({ db: { local_name: "systems", db_name: "misc" } })`, the same store the base game's `load_planet.js` binds to `model.userSystems`. These are pushed as **system objects**. This whole branch is wrapped in `if (model.cShareSystems_tabsIndex)`, which is only true in `load_planet` — in `gw_start` there is no tab index and the branch is skipped, which is what CHANGELOG v2.1.0's "does not affect Galactic War" means.
-2. **Map-pack `.pas` files** — `api.file.list("/ui/mods/", true)` walks every installed mod recursively, `.pas` entries are fetched with `$.getJSON` at `"coui:/" + filePath` (single slash; the listed path already starts with `/`), and the resulting arrays hold **URL strings**, not objects.
+1. **Premade and user systems** — `model.premadeSystems` and `model.userSystems`, both already loaded by the base game's `load_planet.js`. These are **system objects**. The whole branch is wrapped in `if (model.cShareSystems_tabsIndex)`, which is only true in `load_planet` — in `gw_start` there is no tab index and the branch is skipped, which is what CHANGELOG v2.1.0's "does not affect Galactic War" means.
+   - `model.premadeSystems` goes through `ko.extenders.memory`, which fills it asynchronously from `api.memory`, so it is **always still empty when scene mods run** and the read waits on a one-shot `subscribe`. Don't be tempted back to `require(["/main/shared/js/premade_systems.js"])`: that file is a 23 MB AMD copy of `default_systems.json` that nothing in the base game reads and that is two systems stale (157 vs 159), and it used to gate the entire mod, Galactic War included, behind its own load.
+   - `model.userSystems` is read through its `.ready` deferred, with `.always` rather than `.then` because `ko.extenders.db` rejects with no arguments when it cannot create the row. **Never extend a second observable with the same `db` options.** That is a live second binding on the user's real My Systems row: a redundant IndexedDB read, a second write-back subscription, and — when `localStorage["systems"]` is missing or not a UUID, as on a fresh profile — the extender's `addObject` branch mints a rival row and overwrites that key while the base game's instance is doing the same.
+2. **Map-pack `.pas` files** — `api.file.list("/ui/mods/", true)` walks every installed mod recursively, `.pas` entries are fetched with `$.getJSON` at `"coui:/" + filePath` (single slash; the listed path already starts with `/`). Each tab keeps both the **URLs** and the **parsed systems**; which one is used is a scene decision, below. Note `api.file.list` returns a **Coherent** promise, not a jQuery one: no `done`/`fail`/`catch`, it rejects with the string `root + " is not listable"`, and its `then()` swallows anything the handler throws — hence `.always` plus an `_.isArray` guard.
 
-The first branch adds its systems by concatenating onto the live tabs inside a `model.cShareSystems_tabsIndex` subscription, each of the three tabs guarded by its own `addedDefault…` boolean so it happens exactly once no matter how often the index mutates.
+Fetches complete out of order, so results are written into a pre-sized slot by index and the tabs are filled in a **second ordered pass**. That restores the file-listing order which stock `load_pas` used to provide via its `system_index` sort, and which nothing else provides now the mod no longer goes through it.
+
+Both default reads are normalised into deferreds that only ever resolve, because `$.when` settles the moment one input rejects. The systems are copied onto the live tabs only once both have landed; tabs that already exist are filled straight away, and a `model.cShareSystems_tabsIndex` subscription catches the rest and disposes itself once all three are done.
 
 ### Why the code calls both `load_pas` and `addTab`
 
@@ -71,16 +85,20 @@ These two cShareSystems entry points are not interchangeable, and picking the wr
 - `cShareSystems.load_pas(tabName, urls)` takes an array of **file URLs**, fetches them and calls `addTab` itself when the last one lands. Stock cShareSystems iterates the array with `for…in`, so **an empty array means `addTab` is never called and the tab never appears**.
 - `cShareSystems.addTab(tabName, systems)` takes an array of **system objects** and creates the tab immediately.
 
-That drives the three calls in the file:
+That drives the calls in the file:
 
-- The empty `tabOps.load(…)` at the top exists purely for Shared Systems for Galactic War, which **replaces** `load_pas` with a version that only records the file array into its own `mapPacks` registry and loads lazily. Registering the three tab names early is what gets them into the GW systems list; its loader then re-checks the array length on a one-second timer, which is what makes filling the arrays afterwards work.
-- At the end, if any `.pas` files were found, `tabOps.load(…)` is called again with the now-populated URL arrays.
-- If **no** map packs are installed, `tabOps.add(…)` is used instead — because `load_pas` with an empty array would silently produce no tabs, leaving the premade/user systems from branch 1 with nowhere to go.
-- `model.systemSources.valueHasMutated()` afterwards is the nudge that makes Shared Systems for Galactic War recount its systems (CHANGELOG v2.2.0). It is guarded because `model.systemSources` only exists when that mod is present.
+- **The three empty `load_pas` registrations at the top** exist purely for Shared Systems for Galactic War, which **replaces** `load_pas` with a version that only records the file array into its own `mapPacks` registry and loads lazily. Registering the three tab names early is what gets them into the GW systems list, and that mod builds its checkbox list **once**, from whatever is registered by the time this script returns — so the registration has to stay **synchronous and top-level**. It stores the array **by reference** and re-checks its length on a one-second timer, so the arrays filled in later must be **those exact objects**. In `load_planet` this is a pure no-op, because stock `load_pas` walks the array immediately.
+- **Delivery is then per tab, chosen by whether `addTab` exists at all** — the same feature detection that distinguishes the two scenes.
+  - `load_planet`: `addTab(name, systems)` with the systems this mod has already parsed. That halves the I/O, because `load_pas` would re-fetch and re-parse every file just read, and an empty array still creates the tab. Deciding this globally is what CHANGELOG's "a tab going missing" bug was: if any `.pas` existed anywhere, all three tabs went through `load_pas`, and a category no pack happened to match got no tab and silently lost its premade and user systems.
+  - `gw_start`: filling the registered array _was_ the delivery; `load_pas` is called again only because re-registering the same object is a harmless no-op there and keeps any other implementation working.
+- **An empty tab in `gw_start` gets this file's own URL pushed into it.** That mod re-checks an empty pack's file list every second and never gives up, and its deferred never rejects, so an unmatched tab would leave its checkbox spinning with Go To War disabled — and because it waits on all selected sources together, it blocks the others too. This file is certain to fetch (that mod fetched this very URL to inject us) and is not JSON, so the pack settles as an empty source instead.
+- `model.systemSources.valueHasMutated()` afterwards is the nudge that makes Shared Systems for Galactic War recount its systems (CHANGELOG v2.2.0). It is guarded because `model.systemSources` only exists when that mod is present, and conditional on having found something because it forces a full galaxy rebuild via `newGameSeed`.
 
 ### Error handling
 
-The whole body sits in one `try`/`catch` that logs both `e` and `(e.stack || e.message || e)` — the standard shape across Quitch's PA mods, and necessary because an exception escaping a scene script takes out the rest of the scene's JS.
+The synchronous body sits in one `try`/`catch` that logs both `e` and `(e.stack || e.message || e)` — the standard shape across Quitch's PA mods, and necessary because an exception escaping a scene script takes out the rest of the scene's JS.
+
+That `try` covers almost nothing, though: everything that matters runs in a callback long after it has exited. jQuery abandons the rest of a callback list when one entry throws, and Coherent's promise turns a throw into a rejection nobody observes, so one malformed system used to take out either every default system or the tab creation entirely. Every asynchronous entry point is therefore wrapped in `guard()`, which logs through the same `logError`.
 
 ## Conventions
 
@@ -93,6 +111,6 @@ The whole body sits in one `try`/`catch` that logs both `e` and `(e.stack || e.m
 
 ## Releasing
 
-Bump `version`, `build` (the PA build it was tested against) and `date` in [modinfo.json](modinfo.json), add a matching heading to [CHANGELOG.md](CHANGELOG.md), merge to `main` and tag `vX.Y.Z`. The `develop` modinfo keeps its DEV identity but tracks the same version number. There is currently no `## Unreleased` section in the CHANGELOG; entries go under a new version heading.
+Bump `version`, `build` (the PA build it was tested against) and `date` in [modinfo.json](modinfo.json), rename the CHANGELOG's `## Unreleased` heading to the new version, merge to `main` and tag `vX.Y.Z`. The `develop` modinfo keeps its DEV identity but tracks the same version number.
 
-[README.md](README.md) has two known gaps worth fixing whenever it is next touched: the `## What It Does` heading is empty, and the PAMM download link points at the GW-AI-Overhaul repository instead of this one.
+There is an unreleased entry outstanding: `modinfo.json` still reads `2.3.0` / build `116982`, and the accumulated `## Unreleased` fixes are worth `2.4.0` against the current install's build `124667`.
