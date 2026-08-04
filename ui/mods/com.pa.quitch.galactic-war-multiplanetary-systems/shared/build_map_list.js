@@ -12,105 +12,84 @@ function planetarySystemTabs() {
   planetarySystemTabsLoaded = true;
 
   try {
-    var multiplanetaryMaps = [];
-    var multiStartMaps = [];
-    var singlePlanetMaps = [];
-    var tabOne = loc("!LOC:Multiplanetary Systems");
-    var tabTwo = loc("!LOC:Multiplanetary Spawns");
-    var tabThree = loc("!LOC:Single Planet Systems");
-
-    var tabOps = {
-      load: function (mapsOne, mapsTwo, mapsThree) {
-        cShareSystems.load_pas(tabOne, mapsOne);
-        cShareSystems.load_pas(tabTwo, mapsTwo);
-        cShareSystems.load_pas(tabThree, mapsThree);
-      },
-      add: function (mapsOne, mapsTwo, mapsThree) {
-        cShareSystems.addTab(tabOne, mapsOne);
-        cShareSystems.addTab(tabTwo, mapsTwo);
-        cShareSystems.addTab(tabThree, mapsThree);
-      },
-    };
-
-    var checkForMultiplePlanets = function (numberOfPlanets) {
-      return numberOfPlanets > 1;
-    };
-
-    var checkForMultiplanetarySpawns = function (planets) {
-      var startingPlanets = 0;
+    var hasMultipleSpawns = function (planets) {
+      var spawns = 0;
       for (var planet of planets) {
         if (planet.starting_planet) {
-          startingPlanets++;
-        }
-        if (startingPlanets > 1) {
-          return "multiStart";
+          spawns++;
+          if (spawns > 1) {
+            return true;
+          }
         }
       }
-      return "multiPlanet";
+      return false;
     };
 
-    var processSystems = function (
-      planets,
-      multiPlanetMaps,
-      multiSpawnMaps,
-      singlePlanets,
-      filePathOrSystem
-    ) {
-      var systemType = checkForMultiplePlanets(planets.length)
-        ? checkForMultiplanetarySpawns(planets)
-        : "singlePlanet";
-
-      if (_.startsWith(systemType, "multi")) {
-        multiPlanetMaps.push(filePathOrSystem);
-        if (systemType === "multiStart") {
-          multiSpawnMaps.push(filePathOrSystem);
-        }
-      } else {
-        singlePlanets.push(filePathOrSystem);
-      }
+    var makeTab = function (name, matches) {
+      return {
+        name: name,
+        matches: matches,
+        // Map pack file URLs, for cShareSystems.load_pas.
+        urls: [],
+        // Premade and user system objects, kept apart so they can be
+        // concatenated into the live tab in a fixed order however they arrive.
+        premade: [],
+        user: [],
+        defaultsAdded: false,
+      };
     };
 
-    var processDefaultSystems = function (
-      systems,
-      multiPlanetMaps,
-      multiSpawnMaps,
-      singlePlanets
-    ) {
-      _.forEach(systems, function (system) {
-        processSystems(
-          system.planets,
-          multiPlanetMaps,
-          multiSpawnMaps,
-          singlePlanets,
-          system
-        );
+    // Each tab tests the planets independently rather than sharing one verdict,
+    // because a system with more than one starting planet belongs in both of
+    // the first two tabs.
+    var tabs = [
+      makeTab(loc("!LOC:Multiplanetary Systems"), function (planets) {
+        return planets.length > 1;
+      }),
+      // More than one spawn implies more than one planet, so no length test.
+      makeTab(loc("!LOC:Multiplanetary Spawns"), hasMultipleSpawns),
+      makeTab(loc("!LOC:Single Planet Systems"), function (planets) {
+        return planets.length < 2;
+      }),
+    ];
+
+    var matchingTabs = function (planets) {
+      return _.filter(tabs, function (tab) {
+        return tab.matches(planets);
       });
     };
 
-    // Create an empty tab to load in time for Shared Systems for Galactic War
-    tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+    // Register the three names before anything else. Shared Systems for
+    // Galactic War records the array we hand over by reference and re-reads its
+    // length on a one-second timer, and it builds its Systems checkbox list
+    // once, from whatever is registered by the time this script returns - so
+    // this has to be synchronous, and the arrays filled in later have to be
+    // these exact objects. In load_planet it is a no-op: stock cShareSystems
+    // walks the array immediately, so an empty one creates nothing.
+    _.forEach(tabs, function (tab) {
+      cShareSystems.load_pas(tab.name, tab.urls);
+    });
 
     // model.cShareSystems_tabsIndex only exists in load_planet, where
     // cShareSystems builds the tab UI. gw_start has no tab index, no premade
     // systems and no user systems, so this whole branch is skipped there.
     if (model.cShareSystems_tabsIndex) {
-      var defaultMultiplanetary = [];
-      var defaultMultiStart = [];
-      var defaultSingleSystem = [];
-
       // Neither read can be allowed to reject: $.when settles as soon as one of
       // its inputs fails, so a failed My Systems read would otherwise fire the
       // gate below while the PA systems were still arriving.
       var premadeSystemsRead = $.Deferred();
       var userSystemsRead = $.Deferred();
 
+      var addDefaultSystems = function (systems, bucket) {
+        _.forEach(systems, function (system) {
+          _.forEach(matchingTabs(system.planets), function (tab) {
+            tab[bucket].push(system);
+          });
+        });
+      };
+
       var readPremadeSystems = function (systems) {
-        processDefaultSystems(
-          systems,
-          defaultMultiplanetary,
-          defaultMultiStart,
-          defaultSingleSystem
-        );
+        addDefaultSystems(systems, "premade");
         premadeSystemsRead.resolve();
       };
 
@@ -147,43 +126,30 @@ function planetarySystemTabs() {
         // cannot create the row, and a failed My Systems read must still let the
         // PA systems through.
         model.userSystems.ready.always(function () {
-          processDefaultSystems(
-            model.userSystems(),
-            defaultMultiplanetary,
-            defaultMultiStart,
-            defaultSingleSystem
-          );
+          addDefaultSystems(model.userSystems(), "user");
           userSystemsRead.resolve();
         });
       } else {
         userSystemsRead.resolve();
       }
 
-      var addedDefaultMultiSystems = false;
-      var addedDefaultMultiStart = false;
-      var addedDefaultSingleSystem = false;
-      model.cShareSystems_tabsIndex.subscribe(function (tabs) {
-        // Wait on both reads so neither can land after we've copied the arrays
+      model.cShareSystems_tabsIndex.subscribe(function (liveTabs) {
+        // Wait on both reads so neither can land after we've copied the systems
         // into the tabs.
         $.when(premadeSystemsRead, userSystemsRead).always(function () {
-          if (
-            !addedDefaultMultiSystems ||
-            !addedDefaultMultiStart ||
-            !addedDefaultSingleSystem
-          ) {
-            _.forEach(tabs, function (tab) {
-              if (tab.name === tabOne && !addedDefaultMultiSystems) {
-                tab.systems(tab.systems().concat(defaultMultiplanetary));
-                addedDefaultMultiSystems = true;
-              } else if (tab.name === tabTwo && !addedDefaultMultiStart) {
-                tab.systems(tab.systems().concat(defaultMultiStart));
-                addedDefaultMultiStart = true;
-              } else if (tab.name === tabThree && !addedDefaultSingleSystem) {
-                tab.systems(tab.systems().concat(defaultSingleSystem));
-                addedDefaultSingleSystem = true;
-              }
-            });
-          }
+          _.forEach(tabs, function (tab) {
+            if (tab.defaultsAdded) {
+              return;
+            }
+            var liveTab = _.find(liveTabs, { name: tab.name });
+            if (!liveTab) {
+              return;
+            }
+            // Premade before user, matching the base game's
+            // premadeSystems().concat(userSystems()).
+            liveTab.systems(liveTab.systems().concat(tab.premade, tab.user));
+            tab.defaultsAdded = true;
+          });
         });
       });
     }
@@ -194,6 +160,9 @@ function planetarySystemTabs() {
       var mapPacksInstalled = false;
 
       _.forEach(fileList, function (filePath) {
+        // _.endsWith, not the native: PA polyfills String.prototype.endsWith
+        // with a one-argument version, so the position argument is silently
+        // dropped and the answer can be wrong rather than absent.
         if (!_.endsWith(filePath, ".pas")) {
           return;
         }
@@ -203,22 +172,18 @@ function planetarySystemTabs() {
         var deferred = $.Deferred();
         deferredQueue.push(deferred);
 
+        // One slash - the listed path already starts with one.
         var coherentFilePath = "coui:/" + filePath;
 
         $.getJSON(coherentFilePath, function (mapFile) {
           if (!mapFile.planets) {
-            // This should never happen
             console.warn("No planets found in " + coherentFilePath);
             return;
           }
 
-          processSystems(
-            mapFile.planets,
-            multiplanetaryMaps,
-            multiStartMaps,
-            singlePlanetMaps,
-            coherentFilePath
-          );
+          _.forEach(matchingTabs(mapFile.planets), function (tab) {
+            tab.urls.push(coherentFilePath);
+          });
         }).always(function () {
           deferred.resolve();
         });
@@ -226,13 +191,19 @@ function planetarySystemTabs() {
 
       $.when.apply($, deferredQueue).then(function () {
         if (mapPacksInstalled) {
-          tabOps.load(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+          _.forEach(tabs, function (tab) {
+            cShareSystems.load_pas(tab.name, tab.urls);
+          });
           if (model.systemSources) {
             // Update Shared Systems for Galactic War's systems count
             model.systemSources.valueHasMutated();
           }
         } else if (_.isFunction(cShareSystems.addTab)) {
-          tabOps.add(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
+          // load_pas with an empty array creates no tab at all, so the premade
+          // and user systems would have nowhere to land.
+          _.forEach(tabs, function (tab) {
+            cShareSystems.addTab(tab.name, tab.urls);
+          });
         }
       });
     });
