@@ -122,24 +122,29 @@ function planetarySystemTabs() {
         var addedDefaultMultiStart = false;
         var addedDefaultSingleSystem = false;
         model.cShareSystems_tabsIndex.subscribe(function (tabs) {
-          if (
-            !addedDefaultMultiSystems ||
-            !addedDefaultMultiStart ||
-            !addedDefaultSingleSystem
-          ) {
-            _.forEach(tabs, function (tab) {
-              if (tab.name === tabOne && !addedDefaultMultiSystems) {
-                tab.systems(tab.systems().concat(defaultMultiplanetary));
-                addedDefaultMultiSystems = true;
-              } else if (tab.name === tabTwo && !addedDefaultMultiStart) {
-                tab.systems(tab.systems().concat(defaultMultiStart));
-                addedDefaultMultiStart = true;
-              } else if (tab.name === tabThree && !addedDefaultSingleSystem) {
-                tab.systems(tab.systems().concat(defaultSingleSystem));
-                addedDefaultSingleSystem = true;
-              }
-            });
-          }
+          // Wait on the My Systems read so it can't land after we've copied the
+          // arrays into the tabs. .always because a failed read must still let
+          // the PA systems through.
+          userSystems.ready.always(function () {
+            if (
+              !addedDefaultMultiSystems ||
+              !addedDefaultMultiStart ||
+              !addedDefaultSingleSystem
+            ) {
+              _.forEach(tabs, function (tab) {
+                if (tab.name === tabOne && !addedDefaultMultiSystems) {
+                  tab.systems(tab.systems().concat(defaultMultiplanetary));
+                  addedDefaultMultiSystems = true;
+                } else if (tab.name === tabTwo && !addedDefaultMultiStart) {
+                  tab.systems(tab.systems().concat(defaultMultiStart));
+                  addedDefaultMultiStart = true;
+                } else if (tab.name === tabThree && !addedDefaultSingleSystem) {
+                  tab.systems(tab.systems().concat(defaultSingleSystem));
+                  addedDefaultSingleSystem = true;
+                }
+              });
+            }
+          });
         });
       }
 
