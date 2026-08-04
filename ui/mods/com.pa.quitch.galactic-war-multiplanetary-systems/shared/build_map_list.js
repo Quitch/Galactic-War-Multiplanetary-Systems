@@ -13,7 +13,7 @@ function planetarySystemTabs() {
 
   var MOD_NAME = "Single & Multiplanetary System Tab";
 
-  // This file. The release identifier, which the ui tree keeps even on develop.
+  // The ui tree keeps the release identifier even on develop.
   var SELF_URL =
     "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js";
 
@@ -22,10 +22,9 @@ function planetarySystemTabs() {
     console.error(MOD_NAME + ": " + (e.stack || e.message || e));
   };
 
-  // Everything below runs long after the try/catch has exited. jQuery abandons
-  // the rest of a callback list when one entry throws, and Coherent's promise
-  // turns a throw into a rejection nobody observes, so one bad system in one
-  // file could otherwise strand the whole scan or every default system.
+  // Nothing below runs inside the try. jQuery abandons the rest of a callback
+  // list when an entry throws, and Coherent turns a throw into a rejection
+  // nobody observes.
   var guard = function (fn) {
     return function () {
       try {
@@ -60,26 +59,23 @@ function planetarySystemTabs() {
       return {
         name: name,
         matches: matches,
-        // Map pack file URLs, for cShareSystems.load_pas.
+        // Both payloads: load_pas takes URLs, addTab takes parsed systems.
         urls: [],
-        // The same map pack systems already parsed, for cShareSystems.addTab.
         systems: [],
-        // Premade and user system objects, kept apart so they can be
-        // concatenated into the live tab in a fixed order however they arrive.
+        // Kept apart so they concatenate in a fixed order however they arrive.
         premade: [],
         user: [],
         defaultsAdded: false,
       };
     };
 
-    // Each tab tests the planets independently rather than sharing one verdict,
-    // because a system with more than one starting planet belongs in both of
-    // the first two tabs.
+    // Independent predicates, so a system with more than one starting planet
+    // lands in both of the first two tabs.
     var tabs = [
       makeTab(loc("!LOC:Multiplanetary Systems"), function (planets) {
         return planets.length > 1;
       }),
-      // More than one spawn implies more than one planet, so no length test.
+      // More than one spawn implies more than one planet.
       makeTab(loc("!LOC:Multiplanetary Spawns"), hasMultipleSpawns),
       makeTab(loc("!LOC:Single Planet Systems"), function (planets) {
         return planets.length === 1;
@@ -92,31 +88,24 @@ function planetarySystemTabs() {
       });
     };
 
-    // The scene discriminator. Only cShareSystems itself defines addTab, and it
-    // registers for load_planet alone; in gw_start the cShareSystems global is
-    // a load_pas-only stub put up by Shared Systems for Galactic War. Safe to
-    // settle now because cShareSystems ships priority 99 against this mod's
-    // 100, and client mods load in ascending priority order.
+    // Scene discriminator: only cShareSystems defines addTab, and it registers
+    // for load_planet alone. Its priority 99 against this mod's 100 is what
+    // makes reading it this early safe.
     var canAddTabs = _.isFunction(cShareSystems.addTab);
 
-    // Register the three names before anything else. Shared Systems for
-    // Galactic War records the array we hand over by reference and re-reads its
-    // length on a one-second timer, and it builds its Systems checkbox list
-    // once, from whatever is registered by the time this script returns - so
-    // this has to be synchronous, and the arrays filled in later have to be
-    // these exact objects. In load_planet it is a no-op: stock cShareSystems
-    // walks the array immediately, so an empty one creates nothing.
+    // Shared Systems for Galactic War builds its Systems list once, from
+    // whatever is registered by the time this script returns, and holds the
+    // array by reference - so this stays synchronous and later fills must use
+    // these exact objects. A no-op in load_planet, where load_pas walks the
+    // array immediately.
     _.forEach(tabs, function (tab) {
       cShareSystems.load_pas(tab.name, tab.urls);
     });
 
-    // model.cShareSystems_tabsIndex only exists in load_planet, where
-    // cShareSystems builds the tab UI. gw_start has no tab index, no premade
-    // systems and no user systems, so this whole branch is skipped there.
+    // Only load_planet has the tab index, the premade systems and the user
+    // systems; gw_start has none of them.
     if (model.cShareSystems_tabsIndex) {
-      // Neither read can be allowed to reject: $.when settles as soon as one of
-      // its inputs fails, so a failed My Systems read would otherwise fire the
-      // gate below while the PA systems were still arriving.
+      // Must not reject: $.when settles the moment one input does.
       var premadeSystemsRead = $.Deferred();
       var userSystemsRead = $.Deferred();
 
@@ -140,19 +129,17 @@ function planetarySystemTabs() {
         addDefaultSystems(model.userSystems(), "user");
       });
 
-      // The base game already holds the live system list in
-      // model.premadeSystems. /main/shared/js/premade_systems.js, which this
-      // used to require, is a 23 MB copy that nothing in the base game reads
-      // and that is two systems out of date.
+      // premade_systems.js, which this used to require, is a 23 MB copy of the
+      // same list that nothing in the base game reads and that is two systems
+      // out of date.
       if (!model.premadeSystems) {
         premadeSystemsRead.resolve();
       } else if (_.size(model.premadeSystems()) > 0) {
         readPremadeSystems(model.premadeSystems());
         premadeSystemsRead.resolve();
       } else {
-        // ko.extenders.memory fills the observable asynchronously from
-        // api.memory, so it is always still empty when scene mods run. One
-        // notification is all it ever sends.
+        // ko.extenders.memory fills this asynchronously, so it is always still
+        // empty when scene mods run.
         var premadeSubscription = model.premadeSystems.subscribe(
           function (systems) {
             premadeSubscription.dispose();
@@ -162,18 +149,12 @@ function planetarySystemTabs() {
         );
       }
 
-      // Reuse the base game's observable rather than extending our own with the
-      // same db options. A second binding over local_name "systems" re-reads
-      // IndexedDB for no reason, attaches a second write-back subscription to
-      // the user's real My Systems row, and - when localStorage["systems"] is
-      // absent or not a UUID, as on a fresh profile - takes the extender's
-      // addObject branch, minting a rival row and overwriting that key while
-      // the base game's own instance is doing the same. Last writer wins and
-      // the user's saved systems can end up orphaned.
+      // Never extend a second observable with the same db options: that is a
+      // live second binding on the user's real My Systems row, and on a fresh
+      // profile it mints a rival row and overwrites localStorage["systems"].
       if (model.userSystems && model.userSystems.ready) {
-        // .always, not .then: the db extender rejects with no arguments when it
-        // cannot create the row, and a failed My Systems read must still let the
-        // PA systems through.
+        // .always: the db extender rejects with no arguments when it cannot
+        // create the row, which must not hold back the PA systems.
         model.userSystems.ready.always(function () {
           readUserSystems();
           userSystemsRead.resolve();
@@ -182,7 +163,7 @@ function planetarySystemTabs() {
         userSystemsRead.resolve();
       }
 
-      // Returns the number of tabs cShareSystems has not created yet.
+      // True once every tab has been given its default systems.
       var addDefaultsToTabs = function () {
         var liveTabs = model.cShareSystems_tabsIndex();
         var waiting = 0;
@@ -197,30 +178,26 @@ function planetarySystemTabs() {
             return;
           }
           if (tab.premade.length > 0 || tab.user.length > 0) {
-            // Premade before user, matching the base game's
-            // premadeSystems().concat(userSystems()).
+            // Premade before user, as the base game orders them.
             liveTab.systems(liveTab.systems().concat(tab.premade, tab.user));
           }
           tab.defaultsAdded = true;
         });
 
-        return waiting;
+        return waiting === 0;
       };
 
-      // Wait for both reads before touching anything, so neither can land after
-      // the systems have been copied across. Tabs that already exist are filled
-      // straight away and the subscription only exists to catch the ones
-      // cShareSystems has yet to create - so it disposes itself once all three
-      // are done, rather than living for the scene and re-running on every
-      // addTab any other mod makes.
+      // Copy only once both reads have landed. Tabs that already exist are
+      // filled now; the subscription is only for the ones cShareSystems has yet
+      // to create, so it disposes as soon as the last one is done.
       $.when(premadeSystemsRead, userSystemsRead).done(
         guard(function () {
-          if (addDefaultsToTabs() === 0) {
+          if (addDefaultsToTabs()) {
             return;
           }
           var tabsSubscription = model.cShareSystems_tabsIndex.subscribe(
             guard(function () {
-              if (addDefaultsToTabs() === 0) {
+              if (addDefaultsToTabs()) {
                 tabsSubscription.dispose();
               }
             })
@@ -236,64 +213,54 @@ function planetarySystemTabs() {
 
       _.forEach(tabs, function (tab) {
         if (canAddTabs) {
-          // We have parsed every pas file already, so hand the systems straight
-          // over rather than have load_pas fetch and parse all of them again.
-          // An empty array still creates the tab, which is what this tab's
-          // premade and user systems need; load_pas would create nothing.
+          // The files are parsed already, so skip load_pas re-fetching every
+          // one. An empty array still creates the tab; load_pas would not.
           cShareSystems.addTab(tab.name, tab.systems);
         } else {
           if (tab.urls.length === 0) {
-            // Shared Systems for Galactic War re-checks an empty pack's file
-            // list every second and never gives up, so a tab that matched
-            // nothing would leave its checkbox spinning and Go To War disabled
-            // - and because it waits on all the selected sources together, it
-            // blocks the rest of them too. Give it this file instead: that mod
-            // fetched this very URL to inject us, so it is certain to fetch,
-            // and it is not JSON, so the pack settles as an empty source.
+            // Shared Systems for Galactic War re-checks an empty pack every
+            // second forever, and waits on all selected sources together, so an
+            // unmatched tab would hang Go To War. This file always fetches and
+            // is not JSON, so the pack settles as an empty source instead.
             console.warn(
               MOD_NAME + ": " + tab.name + " matched no map pack systems"
             );
             tab.urls.push(SELF_URL);
           }
-          // gw_start. Shared Systems for Galactic War is already holding this
-          // exact array, so filling it was the delivery - re-registering the
-          // same object is a no-op there and keeps any other implementation of
-          // load_pas working.
+          // Already held by reference, so filling it was the delivery; this
+          // only keeps other implementations of load_pas working.
           cShareSystems.load_pas(tab.name, tab.urls);
         }
       });
 
-      // Make Shared Systems for Galactic War recount. It forces a full galaxy
-      // rebuild, so only when there is something new to count.
+      // Makes Shared Systems for Galactic War recount, at the cost of a full
+      // galaxy rebuild.
       if (foundMapPackSystems && model.systemSources) {
         model.systemSources.valueHasMutated();
       }
     };
 
-    // Every pas file in every active map pack.
     var scanMapPacks = guard(function (fileList) {
       if (!_.isArray(fileList)) {
-        // api.file.list rejects with a string rather than throwing. Carry on
-        // with nothing, so load_planet still gets its three tabs and the
-        // premade and user systems that belong in them.
+        // api.file.list rejects with a string. Carry on, so load_planet still
+        // gets its tabs and their default systems.
         console.warn(MOD_NAME + ": could not list /ui/mods/ - " + fileList);
         fileList = [];
       }
 
       var pasUrls = [];
       _.forEach(fileList, function (filePath) {
-        // _.endsWith, not the native: PA polyfills String.prototype.endsWith
-        // with a one-argument version, so the position argument is silently
-        // dropped and the answer can be wrong rather than absent.
+        // _.endsWith: PA's polyfill for the native takes one argument, silently
+        // dropping the position.
         if (_.endsWith(filePath, ".pas")) {
           // One slash - the listed path already starts with one.
           pasUrls.push("coui:/" + filePath);
         }
       });
 
-      var matches = new Array(pasUrls.length);
-      // Only worth holding on to the parsed systems where addTab can take them.
-      var systems = canAddTabs ? new Array(pasUrls.length) : null;
+      var tabsPerFile = new Array(pasUrls.length);
+      // Only worth keeping the parsed systems where addTab can take them.
+      var systemPerFile = canAddTabs ? new Array(pasUrls.length) : null;
       var pending = pasUrls.length;
 
       var readSystem = guard(function (index, system) {
@@ -302,22 +269,20 @@ function planetarySystemTabs() {
           console.warn(MOD_NAME + ": no planets in " + pasUrls[index]);
           return;
         }
-        matches[index] = matchingTabs(planets);
-        if (systems) {
-          systems[index] = system;
+        tabsPerFile[index] = matchingTabs(planets);
+        if (systemPerFile) {
+          systemPerFile[index] = system;
         }
       });
 
       var finishScan = guard(function () {
-        // Fill the tabs in a second pass so each keeps the file listing's
-        // order, however the fetches interleaved. That is the order stock
-        // load_pas produced with its system_index sort, and nothing else
-        // restores it now that we are not going through it.
+        // Second pass, so each tab keeps the listing order however the fetches
+        // interleaved - the order load_pas used to restore by sorting.
         _.forEach(pasUrls, function (url, index) {
-          _.forEach(matches[index], function (tab) {
+          _.forEach(tabsPerFile[index], function (tab) {
             tab.urls.push(url);
-            if (systems) {
-              tab.systems.push(systems[index]);
+            if (systemPerFile) {
+              tab.systems.push(systemPerFile[index]);
             }
           });
         });
@@ -348,8 +313,8 @@ function planetarySystemTabs() {
       });
     });
 
-    // .always, because api.file.list returns a Coherent promise: no done/fail,
-    // and its then() would swallow anything the handler threw.
+    // .always: api.file.list returns a Coherent promise, which has no done/fail
+    // and whose then() swallows a throw.
     api.file.list("/ui/mods/", true).always(scanMapPacks);
   } catch (e) {
     logError(e);
