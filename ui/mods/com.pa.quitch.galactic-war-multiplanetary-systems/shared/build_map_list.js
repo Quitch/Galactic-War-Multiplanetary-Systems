@@ -186,7 +186,7 @@ function planetarySystemTabs() {
               // Update Shared Systems for Galactic War's systems count
               model.systemSources.valueHasMutated();
             }
-          } else {
+          } else if (_.isFunction(cShareSystems.addTab)) {
             tabOps.add(multiplanetaryMaps, multiStartMaps, singlePlanetMaps);
           }
         });
