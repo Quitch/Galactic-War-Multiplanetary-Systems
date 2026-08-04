@@ -22,9 +22,8 @@ function planetarySystemTabs() {
     console.error(MOD_NAME + ": " + (e.stack || e.message || e));
   };
 
-  // Nothing below runs inside the try. jQuery abandons the rest of a callback
-  // list when an entry throws, and Coherent turns a throw into a rejection
-  // nobody observes.
+  // jQuery abandons the rest of a callback list when an entry throws, and
+  // Coherent turns a throw into a rejection nobody observes.
   var guard = function (fn) {
     return function () {
       try {
