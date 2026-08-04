@@ -6,7 +6,7 @@ This mod adds three tabs to map selection:
 2. Multiplanetary Spawns - systems with more than one starting planet
 3. Single Planet Systems
 
-These options are also presented in Galactic War when using the mod [Shared Systems for Galactic War](https://forums.planetaryannihilation.com/threads/rel-shared-systems-for-galactic-war.71533/).
+These options are also presented in Galactic War when using the mod Shared Systems for Galactic War.
 
 Maps are not included with this mod, they are loaded in maps from map packs you already have installed.
 
