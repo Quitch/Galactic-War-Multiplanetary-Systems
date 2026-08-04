@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v3.0.0 - 2026-08-04
 
 - Include Planetary Annihilation's own systems in the Galactic War tabs
 - A Galactic War tab no longer offers systems another selected source already provides
