@@ -58,6 +58,8 @@ function planetarySystemTabs() {
         matches: matches,
         // Map pack file URLs, for cShareSystems.load_pas.
         urls: [],
+        // The same map pack systems already parsed, for cShareSystems.addTab.
+        systems: [],
         // Premade and user system objects, kept apart so they can be
         // concatenated into the live tab in a fixed order however they arrive.
         premade: [],
@@ -85,6 +87,13 @@ function planetarySystemTabs() {
         return tab.matches(planets);
       });
     };
+
+    // The scene discriminator. Only cShareSystems itself defines addTab, and it
+    // registers for load_planet alone; in gw_start the cShareSystems global is
+    // a load_pas-only stub put up by Shared Systems for Galactic War. Safe to
+    // settle now because cShareSystems ships priority 99 against this mod's
+    // 100, and client mods load in ascending priority order.
+    var canAddTabs = _.isFunction(cShareSystems.addTab);
 
     // Register the three names before anything else. Shared Systems for
     // Galactic War records the array we hand over by reference and re-reads its
@@ -221,20 +230,26 @@ function planetarySystemTabs() {
         return tab.urls.length > 0;
       });
 
-      if (foundMapPackSystems) {
-        _.forEach(tabs, function (tab) {
+      _.forEach(tabs, function (tab) {
+        if (canAddTabs) {
+          // We have parsed every pas file already, so hand the systems straight
+          // over rather than have load_pas fetch and parse all of them again.
+          // An empty array still creates the tab, which is what this tab's
+          // premade and user systems need; load_pas would create nothing.
+          cShareSystems.addTab(tab.name, tab.systems);
+        } else {
+          // gw_start. Shared Systems for Galactic War is already holding this
+          // exact array, so filling it was the delivery - re-registering the
+          // same object is a no-op there and keeps any other implementation of
+          // load_pas working.
           cShareSystems.load_pas(tab.name, tab.urls);
-        });
-        if (model.systemSources) {
-          // Update Shared Systems for Galactic War's systems count
-          model.systemSources.valueHasMutated();
         }
-      } else if (_.isFunction(cShareSystems.addTab)) {
-        // load_pas with an empty array creates no tab at all, so the premade
-        // and user systems would have nowhere to land.
-        _.forEach(tabs, function (tab) {
-          cShareSystems.addTab(tab.name, tab.urls);
-        });
+      });
+
+      // Make Shared Systems for Galactic War recount. It forces a full galaxy
+      // rebuild, so only when there is something new to count.
+      if (foundMapPackSystems && model.systemSources) {
+        model.systemSources.valueHasMutated();
       }
     };
 
@@ -260,6 +275,8 @@ function planetarySystemTabs() {
       });
 
       var matches = new Array(pasUrls.length);
+      // Only worth holding on to the parsed systems where addTab can take them.
+      var systems = canAddTabs ? new Array(pasUrls.length) : null;
       var pending = pasUrls.length;
 
       var readSystem = guard(function (index, system) {
@@ -269,14 +286,22 @@ function planetarySystemTabs() {
           return;
         }
         matches[index] = matchingTabs(planets);
+        if (systems) {
+          systems[index] = system;
+        }
       });
 
       var finishScan = guard(function () {
         // Fill the tabs in a second pass so each keeps the file listing's
-        // order, however the fetches interleaved.
+        // order, however the fetches interleaved. That is the order stock
+        // load_pas produced with its system_index sort, and nothing else
+        // restores it now that we are not going through it.
         _.forEach(pasUrls, function (url, index) {
           _.forEach(matches[index], function (tab) {
             tab.urls.push(url);
+            if (systems) {
+              tab.systems.push(systems[index]);
+            }
           });
         });
         deliverTabs();
