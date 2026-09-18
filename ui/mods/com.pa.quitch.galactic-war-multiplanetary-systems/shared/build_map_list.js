@@ -114,7 +114,7 @@ function planetarySystemTabs() {
 
     // Only load_planet has the tab index, the premade systems and the user
     // systems; gw_start has none of them.
-    if (model.cShareSystems_tabsIndex) {
+    var setUpLoadPlanetDefaults = function () {
       // Must not reject: $.when settles the moment one input does.
       var premadeSystemsRead = $.Deferred();
       var userSystemsRead = $.Deferred();
@@ -202,17 +202,40 @@ function planetarySystemTabs() {
           );
         })
       );
-    }
+    };
+
+    // Not the array form: it defers through require.js's nextTick, a
+    // setTimeout(fn, 4), by which point Shared Systems for Galactic War can
+    // have built its options and started loading them.
+    var gwModule = function (id) {
+      try {
+        return requireGW(id);
+      } catch (e) {
+        return null;
+      }
+    };
+
+    // Identifies one system across independently parsed copies - the same
+    // .pas fetched by two tabs, or a PA system reached through both a tab
+    // and Uber. surface_area agrees because every fix-up shares a formula.
+    var systemKey = function (system) {
+      var planets = playablePlanets(system);
+      if (!planets) {
+        return null;
+      }
+      var generator = planets[0].generator || {};
+      return [
+        system.name,
+        planets.length,
+        generator.seed,
+        system.surface_area,
+      ].join("|");
+    };
 
     // gw_start's mirror of the branch above. Shared Systems for Galactic War
     // is the only implementation of cShareSystems without addTab, so
     // canAddTabs identifies the mod as well as the scene.
-    if (
-      !canAddTabs &&
-      typeof requireGW === "function" &&
-      typeof UberUtility !== "undefined" &&
-      model.systemSources
-    ) {
+    var setUpGalacticWarDefaults = function () {
       var DEFAULT_SYSTEMS_KEY = "default_systems";
       var DEFAULT_SYSTEMS_URL = "coui://ui/main/shared/default_systems.json";
       var READ_TIMEOUT_MS = 30000;
@@ -228,17 +251,6 @@ function planetarySystemTabs() {
           }
         }, READ_TIMEOUT_MS);
         return deferred;
-      };
-
-      // Not the array form: it defers through require.js's nextTick, a
-      // setTimeout(fn, 4), by which point Shared Systems for Galactic War can
-      // have built its options and started loading them.
-      var gwModule = function (id) {
-        try {
-          return requireGW(id);
-        } catch (e) {
-          return null;
-        }
       };
 
       // Shared Systems for Galactic War's own progress format, tooltipped
@@ -266,23 +278,6 @@ function planetarySystemTabs() {
               4 * Math.PI * Math.pow(planet.generator.radius, 2) * 0.000001;
           }
         });
-      };
-
-      // Identifies one system across independently parsed copies - the same
-      // .pas fetched by two tabs, or a PA system reached through both a tab
-      // and Uber. surface_area agrees because every fix-up shares a formula.
-      var systemKey = function (system) {
-        var planets = playablePlanets(system);
-        if (!planets) {
-          return null;
-        }
-        var generator = planets[0].generator || {};
-        return [
-          system.name,
-          planets.length,
-          generator.seed,
-          system.surface_area,
-        ].join("|");
       };
 
       var readDefaultSystems = guard(function (systems) {
@@ -481,6 +476,19 @@ function planetarySystemTabs() {
             ": could not reach Shared Systems for Galactic War's map packs"
         );
       }
+    };
+
+    if (model.cShareSystems_tabsIndex) {
+      setUpLoadPlanetDefaults();
+    }
+
+    if (
+      !canAddTabs &&
+      typeof requireGW === "function" &&
+      typeof UberUtility !== "undefined" &&
+      model.systemSources
+    ) {
+      setUpGalacticWarDefaults();
     }
 
     var deliverTabs = function () {
