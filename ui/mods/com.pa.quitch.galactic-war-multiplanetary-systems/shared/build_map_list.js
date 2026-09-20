@@ -452,9 +452,11 @@ function planetarySystemTabs() {
           return $.when.apply($, waitingOn).then(function (systems) {
             // $.when resolves one argument per input, in order, so the other
             // sources are the trailing ones.
-            var otherSystems = _.flatten(
-              _.takeRight(_.toArray(arguments), otherSources.length)
-            );
+            var otherSystems = _(arguments)
+              .toArray()
+              .takeRight(otherSources.length)
+              .flatten()
+              .value();
             return mergeGalacticWarDefaults(
               tab,
               systems,
