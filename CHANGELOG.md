@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v3.0.1 - 2026-10-01
 
 - The Galactic War setup screen no longer freezes while map pack systems are sorted, after its first visit
 
