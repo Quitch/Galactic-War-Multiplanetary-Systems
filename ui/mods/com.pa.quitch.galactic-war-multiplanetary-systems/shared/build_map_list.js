@@ -537,7 +537,78 @@ function planetarySystemTabs() {
       }
     };
 
-    var scanMapPacks = guard(function (fileList) {
+    // Each .pas file's tab indexes, valid for one set of mounted client mods.
+    // Bump the format when the classification rules change: the -dev copy
+    // keeps its version across edits, so the mod set alone would not notice.
+    var TAB_CACHE_KEY = "gw_multiplanetary_systems_tab_cache";
+    var TAB_CACHE_FORMAT = 1;
+
+    var modsSignature = function (mods) {
+      if (!_.isArray(mods)) {
+        return null;
+      }
+      return _.sortBy(
+        _.map(mods, function (mod) {
+          return mod ? mod.identifier + "@" + mod.version : "";
+        })
+      ).join(",");
+    };
+
+    var readTabCache = function (signature) {
+      try {
+        var cache = JSON.parse(localStorage.getItem(TAB_CACHE_KEY));
+        if (
+          cache &&
+          cache.format === TAB_CACHE_FORMAT &&
+          cache.mods === signature &&
+          _.isPlainObject(cache.tabs)
+        ) {
+          return cache.tabs;
+        }
+      } catch (e) {
+        console.warn(MOD_NAME + ": ignoring an unreadable tab cache - " + e);
+      }
+      return {};
+    };
+
+    // Null for anything that is not a list of known tab indexes, so a damaged
+    // entry is fetched again rather than trusted.
+    var cachedTabs = function (cache, url) {
+      var indexes = _.has(cache, url) ? cache[url] : null;
+      if (!_.isArray(indexes)) {
+        return null;
+      }
+      var cached = _.map(indexes, function (index) {
+        return tabs[index];
+      });
+      return _.every(cached) ? cached : null;
+    };
+
+    var writeTabCache = function (signature, pasUrls, tabsPerFile) {
+      var memo = {};
+      _.forEach(pasUrls, function (url, index) {
+        // A failed fetch has no entry, so it is retried next time.
+        if (tabsPerFile[index]) {
+          memo[url] = _.map(tabsPerFile[index], function (tab) {
+            return _.indexOf(tabs, tab);
+          });
+        }
+      });
+      try {
+        localStorage.setItem(
+          TAB_CACHE_KEY,
+          JSON.stringify({
+            format: TAB_CACHE_FORMAT,
+            mods: signature,
+            tabs: memo,
+          })
+        );
+      } catch (e) {
+        console.warn(MOD_NAME + ": could not cache the tab sorting - " + e);
+      }
+    };
+
+    var scanMapPacks = guard(function (fileList, mountedMods) {
       if (!_.isArray(fileList)) {
         // api.file.list rejects with a string. Carry on, so load_planet still
         // gets its tabs and their default systems.
@@ -558,12 +629,28 @@ function planetarySystemTabs() {
       var tabsPerFile = new Array(pasUrls.length);
       // Only worth keeping the parsed systems where addTab can take them.
       var systemPerFile = canAddTabs ? new Array(pasUrls.length) : null;
-      var pending = pasUrls.length;
+      var signature = modsSignature(mountedMods);
+      // load_planet needs the parsed systems, so only gw_start reads the cache.
+      var cache = signature && !canAddTabs ? readTabCache(signature) : {};
+      var toFetch = [];
+
+      _.forEach(pasUrls, function (url, index) {
+        var cached = cachedTabs(cache, url);
+        if (cached) {
+          tabsPerFile[index] = cached;
+        } else {
+          toFetch.push(index);
+        }
+      });
+
+      var pending = toFetch.length;
 
       var readSystem = guard(function (index, system) {
         var planets = playablePlanets(system);
         if (!planets) {
           console.warn(MOD_NAME + ": no planets in " + pasUrls[index]);
+          // Cached as matching nothing, so it is not fetched every visit.
+          tabsPerFile[index] = [];
           return;
         }
         tabsPerFile[index] = matchingTabs(planets);
@@ -583,6 +670,9 @@ function planetarySystemTabs() {
             }
           });
         });
+        if (signature && toFetch.length > 0) {
+          writeTabCache(signature, pasUrls, tabsPerFile);
+        }
         deliverTabs();
       });
 
@@ -591,7 +681,8 @@ function planetarySystemTabs() {
         return;
       }
 
-      _.forEach(pasUrls, function (url, index) {
+      _.forEach(toFetch, function (index) {
+        var url = pasUrls[index];
         $.getJSON(url)
           .done(function (system) {
             readSystem(index, system);
@@ -610,9 +701,26 @@ function planetarySystemTabs() {
       });
     });
 
-    // .always: api.file.list returns a Coherent promise, which has no done/fail
-    // and whose then() swallows a throw.
-    api.file.list("/ui/mods/", true).always(scanMapPacks);
+    var fileList;
+    var mountedMods;
+    var awaiting = 2;
+    var arrived = function () {
+      awaiting--;
+      if (awaiting === 0) {
+        scanMapPacks(fileList, mountedMods);
+      }
+    };
+
+    // .always: both return a Coherent promise, which has no done/fail and
+    // whose then() swallows a throw.
+    api.file.list("/ui/mods/", true).always(function (list) {
+      fileList = list;
+      arrived();
+    });
+    api.mods.getMounted("client", true).always(function (mods) {
+      mountedMods = mods;
+      arrived();
+    });
   } catch (e) {
     logError(e);
   }
