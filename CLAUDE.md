@@ -39,6 +39,8 @@ The game's Coherent UI runs Chromium 40. `var` only — **no `const`/`let`**, no
 
 [eslint.config.mjs](eslint.config.mjs) is the authoritative answer to "may I use X?" — `es-x/restrict-to-es5` bans everything post-ES5 and the whitelist block re-enables only what Chrome 40 actually shipped, each entry annotated with the Chrome version. Read the comments there before adding an exception. Note the existing code uses `_.startsWith`/`_.endsWith` rather than the native methods; that is required, because PA's own polyfill for those takes only one argument and silently drops the position argument.
 
+The `eslint-plugin-lodash` `v3` rules apply to shipped code only, because `_` is a PA runtime global the Node tooling does not have. Every non-`prefer-*` rule is on. Of the `prefer-*` rules only `prefer-get`, `prefer-includes`, and `prefer-startswith` are kept, since there the lodash method stands in for a post-ES5 feature Chrome 40 lacks; the other fourteen are off as style preferences over ES5 equivalents. ESLint is held at **9.x**: `eslint-plugin-lodash` calls `context.getSourceCode`, which ESLint 10 removed. `eslint-plugin-es-x` is held at 9.x for the same reason (its 10.x needs ESLint >= 10.6).
+
 ## Architecture
 
 ### One file, two scenes, up to two executions
@@ -122,6 +124,15 @@ That drives the calls in the file:
 The synchronous body sits in one `try`/`catch` that logs both `e` and `(e.stack || e.message || e)` — the standard shape across Quitch's PA mods, and necessary because an exception escaping a scene script takes out the rest of the scene's JS.
 
 That `try` covers almost nothing, though: everything that matters runs in a callback long after it has exited. jQuery abandons the rest of a callback list when one entry throws, and Coherent's promise turns a throw into a rejection nobody observes, so one malformed system used to take out either every default system or the tab creation entirely. Every asynchronous entry point is therefore wrapped in `guard()`, which logs through the same `logError`.
+
+### Tab cache
+
+Fetching and parsing every `.pas` froze `gw_start` for about two seconds, only to learn which tabs each file belongs in. `scanMapPacks` therefore keeps a memo in `localStorage` under `gw_multiplanetary_systems_tab_cache`: `{ format, mods, tabs: { "<coui url>": [tabIndex, ...] } }`. `mods` is the sorted `identifier@version` of every mounted client mod (`api.mods.getMounted("client", true)`, joined with the listing before the scan starts), and the memo is used only when it matches. `TAB_CACHE_FORMAT` must be bumped whenever the classification rules change, because the `-dev` copy keeps its version across edits.
+
+- Only `gw_start` (`!canAddTabs`) reads it, and fetches just the files it does not cover. `load_planet` always scans, because `addTab` needs the parsed systems, but it writes the memo too.
+- It is rewritten from the current listing whenever anything was fetched, so removed files drop out. A file with no planets is stored as `[]`; a failed fetch is not stored, so it is retried. The `SELF_URL` padding happens later, in `deliverTabs`, and is never stored.
+- Malformed or mismatched content, or a `getMounted` that does not give an array, means a full scan.
+- Known limit: a map pack whose file content changes without a version bump, and without a file being added or removed, keeps its old tabs until any client mod changes. Community Mods updates always bump the version.
 
 ## Conventions
 

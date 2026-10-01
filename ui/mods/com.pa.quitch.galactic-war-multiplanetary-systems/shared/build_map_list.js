@@ -114,7 +114,7 @@ function planetarySystemTabs() {
 
     // Only load_planet has the tab index, the premade systems and the user
     // systems; gw_start has none of them.
-    if (model.cShareSystems_tabsIndex) {
+    var setUpLoadPlanetDefaults = function () {
       // Must not reject: $.when settles the moment one input does.
       var premadeSystemsRead = $.Deferred();
       var userSystemsRead = $.Deferred();
@@ -202,17 +202,40 @@ function planetarySystemTabs() {
           );
         })
       );
-    }
+    };
+
+    // Not the array form: it defers through require.js's nextTick, a
+    // setTimeout(fn, 4), by which point Shared Systems for Galactic War can
+    // have built its options and started loading them.
+    var gwModule = function (id) {
+      try {
+        return requireGW(id);
+      } catch (e) {
+        return null;
+      }
+    };
+
+    // Identifies one system across independently parsed copies - the same
+    // .pas fetched by two tabs, or a PA system reached through both a tab
+    // and Uber. surface_area agrees because every fix-up shares a formula.
+    var systemKey = function (system) {
+      var planets = playablePlanets(system);
+      if (!planets) {
+        return null;
+      }
+      var generator = planets[0].generator || {};
+      return [
+        system.name,
+        planets.length,
+        generator.seed,
+        system.surface_area,
+      ].join("|");
+    };
 
     // gw_start's mirror of the branch above. Shared Systems for Galactic War
     // is the only implementation of cShareSystems without addTab, so
     // canAddTabs identifies the mod as well as the scene.
-    if (
-      !canAddTabs &&
-      typeof requireGW === "function" &&
-      typeof UberUtility !== "undefined" &&
-      model.systemSources
-    ) {
+    var setUpGalacticWarDefaults = function () {
       var DEFAULT_SYSTEMS_KEY = "default_systems";
       var DEFAULT_SYSTEMS_URL = "coui://ui/main/shared/default_systems.json";
       var READ_TIMEOUT_MS = 30000;
@@ -228,17 +251,6 @@ function planetarySystemTabs() {
           }
         }, READ_TIMEOUT_MS);
         return deferred;
-      };
-
-      // Not the array form: it defers through require.js's nextTick, a
-      // setTimeout(fn, 4), by which point Shared Systems for Galactic War can
-      // have built its options and started loading them.
-      var gwModule = function (id) {
-        try {
-          return requireGW(id);
-        } catch (e) {
-          return null;
-        }
       };
 
       // Shared Systems for Galactic War's own progress format, tooltipped
@@ -266,23 +278,6 @@ function planetarySystemTabs() {
               4 * Math.PI * Math.pow(planet.generator.radius, 2) * 0.000001;
           }
         });
-      };
-
-      // Identifies one system across independently parsed copies - the same
-      // .pas fetched by two tabs, or a PA system reached through both a tab
-      // and Uber. surface_area agrees because every fix-up shares a formula.
-      var systemKey = function (system) {
-        var planets = playablePlanets(system);
-        if (!planets) {
-          return null;
-        }
-        var generator = planets[0].generator || {};
-        return [
-          system.name,
-          planets.length,
-          generator.seed,
-          system.surface_area,
-        ].join("|");
       };
 
       var readDefaultSystems = guard(function (systems) {
@@ -457,9 +452,11 @@ function planetarySystemTabs() {
           return $.when.apply($, waitingOn).then(function (systems) {
             // $.when resolves one argument per input, in order, so the other
             // sources are the trailing ones.
-            var otherSystems = _.flatten(
-              _.takeRight(_.toArray(arguments), otherSources.length)
-            );
+            var otherSystems = _(arguments)
+              .toArray()
+              .takeRight(otherSources.length)
+              .flatten()
+              .value();
             return mergeGalacticWarDefaults(
               tab,
               systems,
@@ -481,6 +478,19 @@ function planetarySystemTabs() {
             ": could not reach Shared Systems for Galactic War's map packs"
         );
       }
+    };
+
+    if (model.cShareSystems_tabsIndex) {
+      setUpLoadPlanetDefaults();
+    }
+
+    if (
+      !canAddTabs &&
+      typeof requireGW === "function" &&
+      typeof UberUtility !== "undefined" &&
+      model.systemSources
+    ) {
+      setUpGalacticWarDefaults();
     }
 
     var deliverTabs = function () {
@@ -527,7 +537,78 @@ function planetarySystemTabs() {
       }
     };
 
-    var scanMapPacks = guard(function (fileList) {
+    // Each .pas file's tab indexes, valid for one set of mounted client mods.
+    // Bump the format when the classification rules change: the -dev copy
+    // keeps its version across edits, so the mod set alone would not notice.
+    var TAB_CACHE_KEY = "gw_multiplanetary_systems_tab_cache";
+    var TAB_CACHE_FORMAT = 1;
+
+    var modsSignature = function (mods) {
+      if (!_.isArray(mods)) {
+        return null;
+      }
+      return _.sortBy(
+        _.map(mods, function (mod) {
+          return mod ? mod.identifier + "@" + mod.version : "";
+        })
+      ).join(",");
+    };
+
+    var readTabCache = function (signature) {
+      try {
+        var cache = JSON.parse(localStorage.getItem(TAB_CACHE_KEY));
+        if (
+          cache &&
+          cache.format === TAB_CACHE_FORMAT &&
+          cache.mods === signature &&
+          _.isPlainObject(cache.tabs)
+        ) {
+          return cache.tabs;
+        }
+      } catch (e) {
+        console.warn(MOD_NAME + ": ignoring an unreadable tab cache - " + e);
+      }
+      return {};
+    };
+
+    // Null for anything that is not a list of known tab indexes, so a damaged
+    // entry is fetched again rather than trusted.
+    var cachedTabs = function (cache, url) {
+      var indexes = _.has(cache, url) ? cache[url] : null;
+      if (!_.isArray(indexes)) {
+        return null;
+      }
+      var cached = _.map(indexes, function (index) {
+        return tabs[index];
+      });
+      return _.every(cached) ? cached : null;
+    };
+
+    var writeTabCache = function (signature, pasUrls, tabsPerFile) {
+      var memo = {};
+      _.forEach(pasUrls, function (url, index) {
+        // A failed fetch has no entry, so it is retried next time.
+        if (tabsPerFile[index]) {
+          memo[url] = _.map(tabsPerFile[index], function (tab) {
+            return _.indexOf(tabs, tab);
+          });
+        }
+      });
+      try {
+        localStorage.setItem(
+          TAB_CACHE_KEY,
+          JSON.stringify({
+            format: TAB_CACHE_FORMAT,
+            mods: signature,
+            tabs: memo,
+          })
+        );
+      } catch (e) {
+        console.warn(MOD_NAME + ": could not cache the tab sorting - " + e);
+      }
+    };
+
+    var scanMapPacks = guard(function (fileList, mountedMods) {
       if (!_.isArray(fileList)) {
         // api.file.list rejects with a string. Carry on, so load_planet still
         // gets its tabs and their default systems.
@@ -548,12 +629,28 @@ function planetarySystemTabs() {
       var tabsPerFile = new Array(pasUrls.length);
       // Only worth keeping the parsed systems where addTab can take them.
       var systemPerFile = canAddTabs ? new Array(pasUrls.length) : null;
-      var pending = pasUrls.length;
+      var signature = modsSignature(mountedMods);
+      // load_planet needs the parsed systems, so only gw_start reads the cache.
+      var cache = signature && !canAddTabs ? readTabCache(signature) : {};
+      var toFetch = [];
+
+      _.forEach(pasUrls, function (url, index) {
+        var cached = cachedTabs(cache, url);
+        if (cached) {
+          tabsPerFile[index] = cached;
+        } else {
+          toFetch.push(index);
+        }
+      });
+
+      var pending = toFetch.length;
 
       var readSystem = guard(function (index, system) {
         var planets = playablePlanets(system);
         if (!planets) {
           console.warn(MOD_NAME + ": no planets in " + pasUrls[index]);
+          // Cached as matching nothing, so it is not fetched every visit.
+          tabsPerFile[index] = [];
           return;
         }
         tabsPerFile[index] = matchingTabs(planets);
@@ -573,6 +670,9 @@ function planetarySystemTabs() {
             }
           });
         });
+        if (signature && toFetch.length > 0) {
+          writeTabCache(signature, pasUrls, tabsPerFile);
+        }
         deliverTabs();
       });
 
@@ -581,7 +681,8 @@ function planetarySystemTabs() {
         return;
       }
 
-      _.forEach(pasUrls, function (url, index) {
+      _.forEach(toFetch, function (index) {
+        var url = pasUrls[index];
         $.getJSON(url)
           .done(function (system) {
             readSystem(index, system);
@@ -600,9 +701,26 @@ function planetarySystemTabs() {
       });
     });
 
-    // .always: api.file.list returns a Coherent promise, which has no done/fail
-    // and whose then() swallows a throw.
-    api.file.list("/ui/mods/", true).always(scanMapPacks);
+    var fileList;
+    var mountedMods;
+    var awaiting = 2;
+    var arrived = function () {
+      awaiting--;
+      if (awaiting === 0) {
+        scanMapPacks(fileList, mountedMods);
+      }
+    };
+
+    // .always: both return a Coherent promise, which has no done/fail and
+    // whose then() swallows a throw.
+    api.file.list("/ui/mods/", true).always(function (list) {
+      fileList = list;
+      arrived();
+    });
+    api.mods.getMounted("client", true).always(function (mods) {
+      mountedMods = mods;
+      arrived();
+    });
   } catch (e) {
     logError(e);
   }

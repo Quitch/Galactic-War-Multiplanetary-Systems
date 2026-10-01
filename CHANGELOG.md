@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v3.0.1 - 2026-10-01
+
+- The Galactic War setup screen no longer freezes while map pack systems are sorted, after its first visit
+
 ## v3.0.0 - 2026-08-04
 
 - Include Planetary Annihilation's own systems in the Galactic War tabs
