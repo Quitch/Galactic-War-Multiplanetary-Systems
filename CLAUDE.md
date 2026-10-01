@@ -125,6 +125,15 @@ The synchronous body sits in one `try`/`catch` that logs both `e` and `(e.stack 
 
 That `try` covers almost nothing, though: everything that matters runs in a callback long after it has exited. jQuery abandons the rest of a callback list when one entry throws, and Coherent's promise turns a throw into a rejection nobody observes, so one malformed system used to take out either every default system or the tab creation entirely. Every asynchronous entry point is therefore wrapped in `guard()`, which logs through the same `logError`.
 
+### Tab cache
+
+Fetching and parsing every `.pas` froze `gw_start` for about two seconds, only to learn which tabs each file belongs in. `scanMapPacks` therefore keeps a memo in `localStorage` under `gw_multiplanetary_systems_tab_cache`: `{ format, mods, tabs: { "<coui url>": [tabIndex, ...] } }`. `mods` is the sorted `identifier@version` of every mounted client mod (`api.mods.getMounted("client", true)`, joined with the listing before the scan starts), and the memo is used only when it matches. `TAB_CACHE_FORMAT` must be bumped whenever the classification rules change, because the `-dev` copy keeps its version across edits.
+
+- Only `gw_start` (`!canAddTabs`) reads it, and fetches just the files it does not cover. `load_planet` always scans, because `addTab` needs the parsed systems, but it writes the memo too.
+- It is rewritten from the current listing whenever anything was fetched, so removed files drop out. A file with no planets is stored as `[]`; a failed fetch is not stored, so it is retried. The `SELF_URL` padding happens later, in `deliverTabs`, and is never stored.
+- Malformed or mismatched content, or a `getMounted` that does not give an array, means a full scan.
+- Known limit: a map pack whose file content changes without a version bump, and without a file being added or removed, keeps its old tabs until any client mod changes. Community Mods updates always bump the version.
+
 ## Conventions
 
 - Two-space indent, camelCase, Prettier-formatted. `.prettierrc` pins `trailingComma: "es5"` because Prettier's default `"all"` emits trailing commas in call arguments, which is ES2017 syntax Chrome 40 cannot parse — a runtime requirement, not a style choice. `endOfLine: "auto"` is there because `.gitattributes`' `* text=auto` checks the tree out CRLF on Windows.
