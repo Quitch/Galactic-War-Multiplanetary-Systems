@@ -146,5 +146,3 @@ Fetching and parsing every `.pas` froze `gw_start` for about two seconds, only t
 ## Releasing
 
 Bump `version`, `build` (the PA build it was tested against) and `date` in [modinfo.json](modinfo.json), rename the CHANGELOG's `## Unreleased` heading to the new version, merge to `main` and tag `vX.Y.Z`. The `develop` modinfo keeps its DEV identity but tracks the same version number.
-
-There is an unreleased entry outstanding: `modinfo.json` still reads `2.3.0` / build `116982`, and the accumulated `## Unreleased` fixes are worth `2.4.0` against the current install's build `124667`.
