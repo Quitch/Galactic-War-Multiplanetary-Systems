@@ -513,10 +513,6 @@ function planetarySystemTabs() {
       var SELF_URL =
         "coui://ui/mods/com.pa.quitch.galactic-war-multiplanetary-systems/shared/build_map_list.js";
 
-      var foundMapPackSystems = _.some(tabs, function (tab) {
-        return tab.urls.length > 0;
-      });
-
       _.forEach(tabs, function (tab) {
         if (canAddTabs) {
           // The files are parsed already, so skip load_pas re-fetching every
@@ -544,12 +540,6 @@ function planetarySystemTabs() {
           cShareSystems.load_pas(tab.name, tab.urls);
         }
       });
-
-      // Makes Shared Systems for Galactic War recount, at the cost of a full
-      // galaxy rebuild.
-      if (foundMapPackSystems && model.systemSources) {
-        model.systemSources.valueHasMutated();
-      }
     };
 
     // Each .pas file's tab indexes, valid for one set of mounted client mods.
