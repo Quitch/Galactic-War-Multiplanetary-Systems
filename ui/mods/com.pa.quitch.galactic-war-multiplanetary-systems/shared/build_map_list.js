@@ -348,9 +348,9 @@ function planetarySystemTabs() {
         return settleWithin(settled, finish);
       };
 
-      // Every loader Shared Systems for Galactic War builds is memoised, so
-      // this attaches to the promise it is already waiting on rather than
-      // fetching or parsing anything a second time.
+      // Shared Systems for Galactic War's loaders fetch and parse nothing a
+      // second time, so this attaches to what it is already waiting on. This
+      // mod's earlier tabs run their uncached loadPack wrapper again.
       var systemsFromOtherSources = function (tab) {
         var precedence = _.indexOf(tabs, tab);
         var reads = [];
