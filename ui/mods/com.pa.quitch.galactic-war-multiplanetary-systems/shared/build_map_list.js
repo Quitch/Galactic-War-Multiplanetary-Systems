@@ -374,8 +374,11 @@ function planetarySystemTabs() {
       var systemsFromOtherSources = function (tab) {
         var precedence = _.indexOf(tabs, tab);
         var reads = [];
+        var sources = _.isFunction(model.systemSources)
+          ? model.systemSources()
+          : [];
 
-        _.forEach(model.systemSources(), function (source) {
+        _.forEach(sources, function (source) {
           if (
             !source ||
             !_.isFunction(source.load) ||
@@ -495,11 +498,12 @@ function planetarySystemTabs() {
       setUpLoadPlanetDefaults();
     }
 
+    // Not gated on model.systemSources: Shared Systems for Galactic War's
+    // scene script creates it, and in install order that can run after this.
     if (
       !canAddTabs &&
       typeof requireGW === "function" &&
-      typeof UberUtility !== "undefined" &&
-      model.systemSources
+      typeof UberUtility !== "undefined"
     ) {
       setUpGalacticWarDefaults();
     }
