@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fixed Planetary Annihilation's systems missing from the Galactic War tabs for some install orders
+- Fixed tabs listing a Planetary Annihilation system twice when a map pack also ships it
 - The Galactic War seed no longer changes once map pack systems finish sorting
 
 ## v3.0.1 - 2026-10-01
