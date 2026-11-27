@@ -109,7 +109,8 @@ function planetarySystemTabs() {
         return null;
       }
       var first = planets[0] || {};
-      var generator = first.generator || first.planet || {};
+      // planet first: fixupPlanetConfig copies it over generator.
+      var generator = first.planet || first.generator || {};
       return [
         system.name,
         planets.length,
