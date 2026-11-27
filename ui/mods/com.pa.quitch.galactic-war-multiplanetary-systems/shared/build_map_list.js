@@ -98,6 +98,40 @@ function planetarySystemTabs() {
       });
     };
 
+    // Identifies one system across independently parsed copies - the same
+    // .pas fetched by two tabs, a PA system reached through both a tab and
+    // Uber, or a PA system a map pack also ships. surface_area agrees because
+    // every gw_start fix-up shares a formula; load_planet's systems are not
+    // fixed up, so they keep planet rather than generator and have none.
+    var systemKey = function (system) {
+      var planets = playablePlanets(system);
+      if (!planets) {
+        return null;
+      }
+      var first = planets[0] || {};
+      var generator = first.generator || first.planet || {};
+      return [
+        system.name,
+        planets.length,
+        generator.seed,
+        system.surface_area,
+      ].join("|");
+    };
+
+    var withoutSystemsIn = function (systems, existing) {
+      var keys = new Set();
+      _.forEach(existing, function (system) {
+        var key = systemKey(system);
+        if (key) {
+          keys.add(key);
+        }
+      });
+      return _.filter(systems, function (system) {
+        var key = systemKey(system);
+        return !key || !keys.has(key);
+      });
+    };
+
     // Scene discriminator: only cShareSystems defines addTab, and it registers
     // for load_planet alone. Its priority 99 against this mod's 100 is what
     // makes reading it this early safe.
@@ -175,9 +209,11 @@ function planetarySystemTabs() {
             waiting++;
             return;
           }
-          if (tab.premade.length > 0 || tab.user.length > 0) {
+          // A PA system a map pack also ships keeps the pack's copy.
+          var premade = withoutSystemsIn(tab.premade, liveTab.systems());
+          if (premade.length > 0 || tab.user.length > 0) {
             // Premade before user, as the base game orders them.
-            liveTab.systems(liveTab.systems().concat(tab.premade, tab.user));
+            liveTab.systems(liveTab.systems().concat(premade, tab.user));
           }
           tab.defaultsAdded = true;
         });
@@ -213,23 +249,6 @@ function planetarySystemTabs() {
       } catch (e) {
         return null;
       }
-    };
-
-    // Identifies one system across independently parsed copies - the same
-    // .pas fetched by two tabs, or a PA system reached through both a tab
-    // and Uber. surface_area agrees because every fix-up shares a formula.
-    var systemKey = function (system) {
-      var planets = playablePlanets(system);
-      if (!planets) {
-        return null;
-      }
-      var generator = planets[0].generator || {};
-      return [
-        system.name,
-        planets.length,
-        generator.seed,
-        system.surface_area,
-      ].join("|");
     };
 
     // gw_start's mirror of the branch above. Shared Systems for Galactic War
@@ -401,20 +420,11 @@ function planetarySystemTabs() {
           var defaults = tab.premade;
 
           if (otherSystems.length > 0) {
-            var supplied = new Set();
-            _.forEach(otherSystems, function (system) {
-              var key = systemKey(system);
-              if (key) {
-                supplied.add(key);
-              }
-            });
-            var notSuppliedElsewhere = function (system) {
-              var key = systemKey(system);
-              return !key || !supplied.has(key);
-            };
-            systems = _.filter(systems, notSuppliedElsewhere);
-            defaults = _.filter(defaults, notSuppliedElsewhere);
+            systems = withoutSystemsIn(systems, otherSystems);
+            defaults = withoutSystemsIn(defaults, otherSystems);
           }
+          // A PA system a map pack also ships keeps the pack's copy.
+          defaults = withoutSystemsIn(defaults, systems);
 
           // concat, not push: loadPack memoises its promise and returns the
           // same array to every rebuild.
