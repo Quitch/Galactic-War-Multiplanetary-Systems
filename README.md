@@ -6,9 +6,11 @@ This mod adds three tabs to map selection:
 2. Multiplanetary Spawns - systems with more than one starting planet
 3. Single Planet Systems
 
-These options are also presented in Galactic War when using the mod Shared Systems for Galactic War.
+Each tab holds Planetary Annihilation's own systems and the systems of any map packs you have installed. In skirmish, the tabs also hold your saved systems (My Systems).
 
-Maps are not included with this mod, they are loaded in maps from map packs you already have installed.
+These options are also presented in Galactic War when using the mod Shared Systems for Galactic War. There, the tabs do not hold My Systems; select My Systems in the Systems list to use them.
+
+Maps are not included with this mod.
 
 ## Installation
 
@@ -17,5 +19,5 @@ You should download and install this mod via the Planetary Annihilation: TITANS 
 ## How to Use
 
 1. Install the mod
-2. Install map packs
+2. Optionally, install map packs to add their systems to the tabs
 3. Use the new tabs when selecting a map
