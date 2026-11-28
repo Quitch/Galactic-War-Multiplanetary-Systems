@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## v3.0.2 - 2026-11-28
 
 - Fixed Planetary Annihilation's systems missing from the Galactic War tabs for some install orders
 - Fixed tabs listing a Planetary Annihilation system twice when a map pack also ships it
