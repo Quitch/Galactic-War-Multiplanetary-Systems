@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v3.0.2 - 2026-11-28
+
+- Fixed Planetary Annihilation's systems missing from the Galactic War tabs for some install orders
+- Fixed tabs listing a Planetary Annihilation system twice when a map pack also ships it
+- The Galactic War seed no longer changes once map pack systems finish sorting
+
 ## v3.0.1 - 2026-10-01
 
 - The Galactic War setup screen no longer freezes while map pack systems are sorted, after its first visit
